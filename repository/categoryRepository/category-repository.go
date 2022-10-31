@@ -1,9 +1,9 @@
 package categoryRepository
 
 import (
-	"dompet-miniprojectalta/models/dto"
+	"dompet-miniprojectalta/models/model"
 )
 
 type CategoryRepository interface {
-	GetAllCategory() ([]dto.CategoryDTO, error)
+	GetAllCategory() ([]model.Category, error)
 }

@@ -1,7 +1,6 @@
 package categoryRepository
 
 import (
-	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 
 	"gorm.io/gorm"
@@ -12,13 +11,14 @@ type categoryRepository struct {
 }
 
 // GetAllCategory implements CategoryRepository
-func (b *categoryRepository) GetAllCategory() ([]dto.CategoryDTO, error) {
-	var categorys []dto.CategoryDTO
-	err := b.db.Model(&model.Category{}).Find(&categorys).Error
+func (b *categoryRepository) GetAllCategory() ([]model.Category, error) {
+	var categories []model.Category
+	err := b.db.Model(&model.Category{}).Preload("SubCategories").Find(&categories).Error
 	if err != nil {
 		return nil, err
 	}
-	return categorys, nil
+	
+	return categories, nil
 }
 
 func NewCategoryRepository(db *gorm.DB) CategoryRepository {

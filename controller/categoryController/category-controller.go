@@ -12,7 +12,7 @@ type CategoryController struct {
 }
 
 func (b *CategoryController) GetAllCategory(c echo.Context) error {
-	categorys, err := b.CategoryService.GetAllCategory()
+	categories, err := b.CategoryService.GetAllCategory()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get all category",
@@ -22,6 +22,6 @@ func (b *CategoryController) GetAllCategory(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":   "success",
-		"categorys": categorys,
+		"categories": categories,
 	})
 }
