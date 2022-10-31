@@ -11,8 +11,8 @@ type CategoryController struct {
 	CategoryService categoryService.CategoryService
 }
 
-func (b *CategoryController) GetAllCategory(c echo.Context) error {
-	categories, err := b.CategoryService.GetAllCategory()
+func (cate *CategoryController) GetAllCategory(c echo.Context) error {
+	categories, err := cate.CategoryService.GetAllCategory()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get all category",
