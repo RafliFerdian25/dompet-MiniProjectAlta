@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	config.InitConfig()
 	db, err := database.ConnectDB()
 	if err != nil {
 		panic(err)
@@ -18,7 +19,6 @@ func main() {
 
 	app := routes.New(db)
 
-
-	apiPort := config.ConfigValue("API_PORT")
+	apiPort := config.Cfg.API_PORT
 	app.Start(apiPort)
 }

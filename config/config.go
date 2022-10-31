@@ -1,14 +1,15 @@
 package config
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
 type Config struct {
-	APIPort      string
+	API_PORT      string
 	DB_ADDRESS   string
 	DB_USERNAME  string
 	DB_PASSWORD  string
@@ -16,12 +17,31 @@ type Config struct {
 	TOKEN_SECRET string
 }
 
+var Cfg *Config
+
+func InitConfig() {
+	cfg := &Config{}
+
+	viper.SetConfigName(".env")
+	viper.SetConfigType("env")
+	viper.AddConfigPath(".")
+
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println(err)
+	}
+
+	viper.Unmarshal(cfg)
+
+	Cfg = cfg
+}
+
 // Config func to get env value from key ---
 func ConfigValue(key string) string{
     // load .env file
-    err := godotenv.Load()
+    err := godotenv.Load(".env")
     if err != nil {
-        log.Fatal("Error loading .env file")
+        fmt.Print("Error loading .env file", err)
     }
+	fmt.Println(os.Getenv("API_PORT"))
     return os.Getenv(key)
 }
