@@ -18,9 +18,6 @@ type userServiceImpl struct {
 
 // CreateUser implements UserService
 func (u *userServiceImpl) CreateUser(user dto.UserDTO) error {
-	// make uuid
-	user.ID = helper.GenerateUUID()
-	
 	// hash password
 	password, errPassword := helper.HashPassword(user.Password)
 	user.Password = password

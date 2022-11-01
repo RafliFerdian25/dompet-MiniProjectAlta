@@ -27,7 +27,7 @@ func (ar *accountRepository) DeleteAccount(id uint) error {
 }
 
 // GetAccountByUser implements AccountRepository
-func (ar *accountRepository) GetAccountByUser(userId string) ([]dto.AccountDTO, error) {
+func (ar *accountRepository) GetAccountByUser(userId uint) ([]dto.AccountDTO, error) {
 	var userAccounts []dto.AccountDTO
 	// get data sub category from database by user
 	err := ar.db.Model(&model.Account{}).Where("user_id = ?", userId).Or("user_id IS NULL").Find(&userAccounts).Error

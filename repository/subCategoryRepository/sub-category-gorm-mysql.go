@@ -23,7 +23,7 @@ func (sc *subCategoryRepository) GetSubCategoryById(id uint) (dto.SubCategoryDTO
 }
 
 // GetSubCategoryByUser implements SubCategoryRepository
-func (sc *subCategoryRepository) GetSubCategoryByUser(userId string) ([]dto.SubCategoryDTO, error) {
+func (sc *subCategoryRepository) GetSubCategoryByUser(userId uint) ([]dto.SubCategoryDTO, error) {
 	var SubCategoryUsers []dto.SubCategoryDTO
 	// get data sub category from database by user
 	err := sc.db.Model(&model.SubCategory{}).Where("user_id = ?", userId).Or("user_id IS NULL").Find(&SubCategoryUsers).Error

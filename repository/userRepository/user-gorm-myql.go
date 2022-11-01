@@ -16,7 +16,6 @@ type userRepository struct {
 // CreateUser implements UserRepository
 func (u *userRepository) CreateUser(user dto.UserDTO) error {
 	userModel := model.User{
-		ID:       user.ID,
 		Name:    user.Name,
 		Email:   user.Email,
 		Password:   user.Password,

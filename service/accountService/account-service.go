@@ -7,8 +7,8 @@ import (
 )
 
 type AccountService interface {
-	DeleteAccount(id uint, userId string) error
-	GetAccountByUser(userId string) ([]dto.AccountDTO, error)
+	DeleteAccount(id, userId uint) error
+	GetAccountByUser(userId uint) ([]dto.AccountDTO, error)
 	UpdateAccount(account dto.AccountDTO) error
 	CreateAccount(account dto.AccountDTO) error
 }
@@ -18,7 +18,7 @@ type accountService struct {
 }
 
 // DeleteAccount implements AccountService
-func (as *accountService) DeleteAccount(id uint , userId string) error {
+func (as *accountService) DeleteAccount(id, userId uint) error {
 	account, err := as.accRepo.GetAccountById(id)
 	if err != nil {
 		return err
@@ -35,7 +35,7 @@ func (as *accountService) DeleteAccount(id uint , userId string) error {
 }
 
 // GetAccountByUser implements AccountService
-func (as *accountService) GetAccountByUser(userId string) ([]dto.AccountDTO, error) {
+func (as *accountService) GetAccountByUser(userId uint) ([]dto.AccountDTO, error) {
 	userAccounts, err := as.accRepo.GetAccountByUser(userId)
 	if err != nil {
 		return nil, err

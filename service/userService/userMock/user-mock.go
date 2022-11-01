@@ -1,6 +1,7 @@
 package userMock
 
 import (
+	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 
 	"github.com/stretchr/testify/mock"
@@ -10,7 +11,7 @@ type UserMock struct {
 	mock.Mock
 }
 
-func (u *UserMock) CreateUser(user model.User) error {
+func (u *UserMock) CreateUser(user dto.UserDTO) error {
 	args := u.Called(user)
 
 	return args.Error(0)
