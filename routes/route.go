@@ -64,10 +64,16 @@ func New(db *gorm.DB) *echo.Echo {
 	app.POST("/login", userController.LoginUser)
 
 	// Category Routes
-	app.GET("/categories", categoryController.GetAllCategory, middleware.JWTWithConfig(config))
-
+	appCategory := app.Group("/categories", middleware.JWTWithConfig(config))
+	appCategory.GET("", categoryController.GetAllCategory)
+	appCategory.GET("/:categoryId", categoryController.GetCategoryByID)
+	
 	// SubCategory Routes
-	app.POST("/subcategories", subcategoryController.CreateSubCategory, middleware.JWTWithConfig(config))
+	appSubCategory := app.Group("/subcategories", middleware.JWTWithConfig(config))
+	appSubCategory.POST("", subcategoryController.CreateSubCategory)
+	appSubCategory.GET("/userid", subcategoryController.GetSubCategoryByUser)
+	appSubCategory.DELETE("/:id", subcategoryController.DeleteSubCategory)
+	appSubCategory.PUT("/:id", subcategoryController.UpdateSubCategory)
 
 	return app
 }

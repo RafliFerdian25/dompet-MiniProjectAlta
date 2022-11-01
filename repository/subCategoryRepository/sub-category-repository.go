@@ -5,8 +5,9 @@ import (
 )
 
 type SubCategoryRepository interface {
-	GetSubCategoryByCategoryID(id uint) ([]dto.SubCategoryDTO, error)
+	GetSubCategoryById(id uint) (dto.SubCategoryDTO, error)
+	GetSubCategoryByUser(userId uint) ([]dto.SubCategoryDTO, error)
 	CreateSubCategory(subCategory dto.SubCategoryDTO) error
-	// UpdateSubCategory(subCategory dto.SubCategoryDTO) error
-	// DeleteSubCategory(id string) error
+	DeleteSubCategory(id uint) error
+	UpdateSubCategory(subCategory dto.SubCategoryDTO) error
 }

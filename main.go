@@ -4,6 +4,7 @@ import (
 	"dompet-miniprojectalta/config"
 	"dompet-miniprojectalta/database"
 	"dompet-miniprojectalta/routes"
+	"log"
 )
 
 func main() {
@@ -20,5 +21,5 @@ func main() {
 	app := routes.New(db)
 
 	apiPort := config.Cfg.API_PORT
-	app.Start(apiPort)
+	log.Fatal(app.Start(apiPort))
 }
