@@ -51,6 +51,9 @@ func (s *subCategoryRepository) CreateSubCategory(subCategory dto.SubCategoryDTO
 func (sc *subCategoryRepository) DeleteSubCategory(id uint) error {
 	// delete data sub category from database by id
 	err := sc.db.Model(&model.SubCategory{}).Where("id = ?", id).Delete(&model.SubCategory{})
+	if err.Error != nil {
+		return err.Error
+	}
 	if err.RowsAffected <= 0 {
 		return errors.New("subcategory not found")
 	}

@@ -29,8 +29,11 @@ func InitConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		fmt.Println(err)
 	}
-
-	viper.Unmarshal(cfg)
+	
+	if err := viper.Unmarshal(cfg); err != nil {
+		fmt.Println(err)
+	}
+	
 
 	Cfg = cfg
 }
