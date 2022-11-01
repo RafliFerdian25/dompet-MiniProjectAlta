@@ -29,8 +29,8 @@ func (sc *subCategoryService) GetSubCategoryByUser(userId uint) ([]dto.SubCatego
 }
 
 // CreateSubCategory implements SubCategoryService
-func (s *subCategoryService) CreateSubCategory(subCategory dto.SubCategoryDTO) error {
-	err := s.subCategoryRepository.CreateSubCategory(subCategory)
+func (sc *subCategoryService) CreateSubCategory(subCategory dto.SubCategoryDTO) error {
+	err := sc.subCategoryRepository.CreateSubCategory(subCategory)
 	if err != nil {
 		return err
 	}

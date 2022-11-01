@@ -2,13 +2,16 @@ package routes
 
 import (
 	"dompet-miniprojectalta/config"
+	"dompet-miniprojectalta/controller/accountController"
 	"dompet-miniprojectalta/controller/categoryController"
 	"dompet-miniprojectalta/controller/subCategoryController"
 	"dompet-miniprojectalta/controller/userController"
 	"dompet-miniprojectalta/helper"
+	"dompet-miniprojectalta/repository/accountRepository"
 	"dompet-miniprojectalta/repository/categoryRepository"
 	"dompet-miniprojectalta/repository/subCategoryRepository"
 	"dompet-miniprojectalta/repository/userRepository"
+	"dompet-miniprojectalta/service/accountService"
 	"dompet-miniprojectalta/service/categoryService"
 	"dompet-miniprojectalta/service/subCategoryService"
 	"dompet-miniprojectalta/service/userService"
@@ -28,11 +31,13 @@ func New(db *gorm.DB) *echo.Echo {
 	userRepository := userRepository.NewUserRepository(db)
 	categoryRepository := categoryRepository.NewCategoryRepository(db)
 	subcategoryRepository := subCategoryRepository.NewCategoryRepository(db)
+	accountRepository := accountRepository.NewAccountRepository(db)
 
 	// Services
 	userService := userService.NewUserService(userRepository)
 	categoryService := categoryService.NewCategoryService(categoryRepository)
 	subcategoryService := subCategoryService.NewSubCategoryService(subcategoryRepository)
+	accountService := accountService.NewAccountService(accountRepository)
 
 	// Controllers
 	userController := userController.UserController{
@@ -43,6 +48,9 @@ func New(db *gorm.DB) *echo.Echo {
 	}
 	subcategoryController := subCategoryController.SubCategoryController{
 		SubCategoryService: subcategoryService,
+	}
+	accountController := accountController.AccountController{
+		AccountService: accountService,
 	}
 
 	app := echo.New()
@@ -74,6 +82,12 @@ func New(db *gorm.DB) *echo.Echo {
 	appSubCategory.GET("/userid", subcategoryController.GetSubCategoryByUser)
 	appSubCategory.DELETE("/:id", subcategoryController.DeleteSubCategory)
 	appSubCategory.PUT("/:id", subcategoryController.UpdateSubCategory)
+
+	// Account Routes
+	appAccount := app.Group("/accounts", middleware.JWTWithConfig(config))
+	appAccount.POST("", accountController.CreateAccount)
+	appAccount.PUT("/:id", accountController.UpdateAccount)
+	// appAccount.GET("/userid", accountController.GetAccountByUser)
 
 	return app
 }

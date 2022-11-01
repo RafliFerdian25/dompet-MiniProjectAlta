@@ -25,18 +25,18 @@ func (sc *SubCategoryController) CreateSubCategory(c echo.Context) error {
 			"error":   err.Error(),
 		})
 	}
+	
+	// Validate request body
+	if err = c.Validate(subCategory); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "There is an empty field",
+			"error":   err.Error(),
+		})
+	}
 
 	// Get user id from jwt
 	userId, _ := helper.GetJwt(c)
 	subCategory.UserID = userId
-
-	// Validate request body
-	if err = c.Validate(subCategory); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "Something went wrong",
-			"error":   err.Error(),
-		})
-	}
 
 	// Call service to create sub category
 	err = sc.SubCategoryService.CreateSubCategory(subCategory)
