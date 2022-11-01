@@ -5,5 +5,5 @@ import "gorm.io/gorm"
 type Category struct {
 	gorm.Model
 	Name     string `json:"name" gorm:"notNull"`
-	SubCategoryID []SubCategory
+	SubCategories []SubCategory
 }

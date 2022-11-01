@@ -10,11 +10,12 @@ import (
 )
 
 func ConnectDB() (*gorm.DB, error) {
+	cfg := config.Cfg
 
-	username := config.ConfigValue("DB_USERNAME")
-	password := config.ConfigValue("DB_PASSWORD")
-	address := config.ConfigValue("DB_ADDRESS")
-	dbName := config.ConfigValue("DB_NAME")
+	username := cfg.DB_USERNAME
+	password := cfg.DB_PASSWORD
+	address := cfg.DB_ADDRESS
+	dbName := cfg.DB_NAME
 
 	connectionString := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		username,
