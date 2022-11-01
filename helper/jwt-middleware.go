@@ -9,18 +9,13 @@ import (
 )
 
 type JWTCustomClaims struct {
-	UserID uint   `json:"userId"`
+	UserID string   `json:"userId"`
 	Name  string `json:"name"`
 	jwt.StandardClaims
 }
 
-func CreateToken(userId uint, name string) (string, error) {
+func CreateToken(userId string, name string) (string, error) {
 	config.InitConfig()
-	// Set some claims
-	// claims := jwt.MapClaims{}
-	// claims["userId"] = userId
-	// claims["name"] = name
-	// claims["exp"] = time.Now().Add(time.Hour * 2).Unix()
 	claims := &JWTCustomClaims{
 		userId,
 		name,
@@ -38,7 +33,7 @@ func CreateToken(userId uint, name string) (string, error) {
 	return t, nil
 }
 
-func GetJwt(c echo.Context) (userId uint, name string) {
+func GetJwt(c echo.Context) (userId string, name string) {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*JWTCustomClaims)
 	userId = claims.UserID

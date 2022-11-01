@@ -12,7 +12,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
-	"gorm.io/gorm"
 )
 
 type suiteUsers struct {
@@ -178,9 +177,7 @@ func (s *suiteUsers) TestLoginUsers() {
 		switch v.Name {
 		case "success":
 			mockCall.Return(model.User{
-				Model: gorm.Model{
-					ID: 1,
-				},
+					ID: "1",
 				Name:     "rafli",
 				Email:    "rafli@gmail.com",
 				Password: "123456",

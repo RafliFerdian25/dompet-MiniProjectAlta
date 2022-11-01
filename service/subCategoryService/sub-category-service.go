@@ -8,8 +8,8 @@ import (
 
 type SubCategoryService interface {
 	CreateSubCategory(subCategory dto.SubCategoryDTO) error
-	GetSubCategoryByUser(userId uint) ([]dto.SubCategoryDTO, error)
-	DeleteSubCategory(id, userId uint) error
+	GetSubCategoryByUser(userId string) ([]dto.SubCategoryDTO, error)
+	DeleteSubCategory(id uint, userId string) error
 	UpdateSubCategory(subCategory dto.SubCategoryDTO) error
 }
 
@@ -20,7 +20,7 @@ type subCategoryService struct {
 
 
 // GetSubCategoryByUser implements SubCategoryService
-func (sc *subCategoryService) GetSubCategoryByUser(userId uint) ([]dto.SubCategoryDTO, error) {
+func (sc *subCategoryService) GetSubCategoryByUser(userId string) ([]dto.SubCategoryDTO, error) {
 	subCategoryUsers, err := sc.subCategoryRepository.GetSubCategoryByUser(userId)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (sc *subCategoryService) CreateSubCategory(subCategory dto.SubCategoryDTO) 
 }
 
 // DeleteSubCategory implements SubCategoryService
-func (sc *subCategoryService) DeleteSubCategory(id, userId uint) error {
+func (sc *subCategoryService) DeleteSubCategory(id uint, userId string) error {
 	subCategory, err := sc.subCategoryRepository.GetSubCategoryById(id)
 	if err != nil {
 		return err
