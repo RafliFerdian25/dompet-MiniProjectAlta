@@ -2,6 +2,7 @@ package userRepository
 
 import (
 	"dompet-miniprojectalta/helper"
+	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 	"errors"
 
@@ -13,8 +14,14 @@ type userRepository struct {
 }
 
 // CreateUser implements UserRepository
-func (u *userRepository) CreateUser(user model.User) error {
-	err := u.db.Create(&user).Error
+func (u *userRepository) CreateUser(user dto.UserDTO) error {
+	userModel := model.User{
+		ID:       user.ID,
+		Name:    user.Name,
+		Email:   user.Email,
+		Password:   user.Password,
+	}
+	err := u.db.Create(&userModel).Error
 	if err != nil {
 		return err
 	}

@@ -15,11 +15,20 @@ type UserController struct {
 }
 
 func (u *UserController) CreateUser(c echo.Context) error {
-	var user model.User
+	var user dto.UserDTO
 	err := c.Bind(&user)
 	if err != nil {
 		return c.JSON(500, echo.Map{
 			"message": "fail bind data",
+			"error":   err.Error(),
+		})
+	}
+
+	// validate data user
+	err = c.Validate(user)
+	if err != nil {
+		return c.JSON(500, echo.Map{
+			"message": "There is an empty field",
 			"error":   err.Error(),
 		})
 	}
