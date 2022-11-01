@@ -59,7 +59,7 @@ func (sc *SubCategoryController) GetSubCategoryByUser(c echo.Context) error {
 	userId, _ := helper.GetJwt(c)
 
 	// get sub category by user from service
-	subCategory, err := sc.SubCategoryService.GetSubCategoryByUser(userId)
+	subCategories, err := sc.SubCategoryService.GetSubCategoryByUser(userId)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get sub category by user",
@@ -70,7 +70,7 @@ func (sc *SubCategoryController) GetSubCategoryByUser(c echo.Context) error {
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message":     "success",
-		"subCategory": subCategory,
+		"subCategories": subCategories,
 	})
 }
 

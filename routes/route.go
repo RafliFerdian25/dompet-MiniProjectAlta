@@ -87,7 +87,8 @@ func New(db *gorm.DB) *echo.Echo {
 	appAccount := app.Group("/accounts", middleware.JWTWithConfig(config))
 	appAccount.POST("", accountController.CreateAccount)
 	appAccount.PUT("/:id", accountController.UpdateAccount)
-	// appAccount.GET("/userid", accountController.GetAccountByUser)
+	appAccount.DELETE("/:id", accountController.DeleteAccount)
+	appAccount.GET("/userid", accountController.GetAccountByUser)
 
 	return app
 }
