@@ -51,7 +51,7 @@ func (as *accountService) UpdateAccount(account dto.AccountDTO) error {
 	}
 	// check if user id in the account is the same as the user id in the token
 	if account.UserID != dataAccount.UserID {
-		return errors.New("you are not authorized to delete this subcategory")
+		return errors.New("you are not authorized to update this account")
 	}
 
 	err = as.accRepo.UpdateAccount(account)
