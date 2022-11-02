@@ -62,7 +62,7 @@ func (sc *subCategoryService) UpdateSubCategory(subCategory dto.SubCategoryDTO) 
 	}
 	// check if user id in the subcategory is the same as the user id in the token
 	if subCategory.UserID != dataSubCategory.UserID {
-		return errors.New("you are not authorized to delete this subcategory")
+		return errors.New("you are not authorized to update this subcategory")
 	}
 
 	err = sc.subCategoryRepository.UpdateSubCategory(subCategory)

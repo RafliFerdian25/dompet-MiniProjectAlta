@@ -9,3 +9,12 @@ type TransactionDTO struct {
 	Amount        float64 `json:"amount" validate:"required,numeric,gt=0"`
 	Note          string  `json:"note"`
 }
+
+type TransactionJoin struct {
+	ID            uint    `json:"id"`
+	UserID        uint    `json:"user_id"`
+	SubCategoryID uint    `json:"sub_category_id"`
+	CategoryID    uint    `json:"category_id"`
+	AccountID     uint    `json:"account_id"`
+	Amount        float64 `json:"amount"`
+}

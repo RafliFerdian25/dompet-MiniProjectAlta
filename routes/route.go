@@ -101,6 +101,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// Transaction Routes
 	appTransaction := app.Group("/transactions", middleware.JWTWithConfig(config))
 	appTransaction.POST("",transactionController.CreateTransaction)
+	appTransaction.PUT("/:id", transactionController.UpdateTransaction)
 
 	return app
 }
