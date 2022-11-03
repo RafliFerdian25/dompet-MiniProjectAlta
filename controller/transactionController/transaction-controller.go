@@ -131,7 +131,7 @@ func (tc *TransactionController) CreateTransaction(c echo.Context) error {
 		errBalance := strings.Contains(err.Error(), "enough balance")
 		if errAuthorized || errCategory || errBalance {
 			return c.JSON(http.StatusBadRequest, echo.Map{
-				"message": "fail update transaction",
+				"message": "fail create transaction",
 				"error":   err.Error(),
 			})
 		} 
