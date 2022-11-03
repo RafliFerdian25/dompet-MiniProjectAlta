@@ -15,6 +15,35 @@ type TransactionController struct {
 	TransactionService transactionService.TransactionService
 }
 
+func (tc *TransactionController) DeleteTransaction(c echo.Context) error  {
+	// Get id from url
+	paramId := c.Param("id")
+	id, err := strconv.Atoi(paramId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "fail get id",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get user id from jwt
+	userId, _ := helper.GetJwt(c)
+
+	// call service to delete the transaction
+	err = tc.TransactionService.DeleteTransaction(uint(id), userId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail delete transaction",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+	})
+}
+
 func (tc *TransactionController) UpdateTransaction(c echo.Context) error {
 	var transaction dto.TransactionDTO
 	// Binding request body to struct
@@ -29,6 +58,12 @@ func (tc *TransactionController) UpdateTransaction(c echo.Context) error {
 	// Get id from url
 	paramId := c.Param("id")
 	id, err := strconv.Atoi(paramId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "fail get id",
+			"error":   err.Error(),
+		})
+	}
 	transaction.ID = uint(id)
 
 	// Get user id from jwt

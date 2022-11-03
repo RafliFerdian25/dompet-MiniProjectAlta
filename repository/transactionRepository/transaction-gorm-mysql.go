@@ -12,6 +12,38 @@ type transactionRepository struct {
 	db *gorm.DB
 }
 
+// DeleteTransaction implements TransactionRepository
+func (tr *transactionRepository) DeleteTransaction(id, accountID uint, amountTransaction float64) error {
+	// get account of transaction
+	account, errGetOldAccount := tr.GetAccountById(accountID)
+	if errGetOldAccount != nil {
+		return errGetOldAccount
+	}
+	account.Balance -= amountTransaction
+
+	tr.db.Transaction(func(tx *gorm.DB) error {
+		// update account balance
+		err := tr.db.Model(&model.Account{}).Where("id = ?", accountID).Update("balance", account.Balance)
+		if err.Error != nil {
+			return err.Error
+		}
+		if err.RowsAffected <= 0 {
+			return errors.New("old account not found")
+		}
+
+		// delete transaction
+		errDelete := tr.db.Delete(&model.Transaction{}, id)
+		if errDelete.Error != nil {
+			return errDelete.Error
+		}
+		if errDelete.RowsAffected <= 0 {
+			return errors.New("transaction not found")
+		}
+		return nil
+	})
+	return nil
+}
+
 // UpdateTransaction implements TransactionRepository
 func (tr *transactionRepository) UpdateTransaction(newTransaction dto.TransactionDTO, oldTransaction dto.TransactionJoin, newAccount dto.AccountDTO) error {
 	tr.db.Transaction(func(tx *gorm.DB) error {
@@ -68,6 +100,9 @@ func (tr *transactionRepository) GetTransactionById(id uint) (dto.TransactionJoi
 	err := tr.db.Model(&model.Transaction{}).Select("transactions.id, transactions.user_id, transactions.sub_category_id, sub_categories.category_id, transactions.account_id, transactions.amount").Joins("JOIN sub_categories On transactions.sub_category_id = sub_categories.id").Where("transactions.id = ?", id).Scan(&transaction)
 	if err.Error != nil {
 		return dto.TransactionJoin{}, err.Error
+	}
+	if transaction.ID != id {
+		return dto.TransactionJoin{}, errors.New("transaction not found")
 	}
 	return transaction, nil
 }

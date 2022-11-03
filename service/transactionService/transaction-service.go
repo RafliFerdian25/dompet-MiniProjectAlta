@@ -8,12 +8,32 @@ import (
 )
 
 type TransactionService interface {
+	DeleteTransaction(id uint, userID uint) error
 	UpdateTransaction(transaction dto.TransactionDTO, userId uint) error
 	CreateTransaction(transaction dto.TransactionDTO) error
 }
 
 type transactionService struct {
 	transactionRepo transactionRepository.TransactionRepository
+}
+
+// DeleteTransaction implements TransactionService
+func (ts *transactionService) DeleteTransaction(id uint, userID uint) error {
+	// get old transaction
+	transaction, err := ts.transactionRepo.GetTransactionById(id)
+	if err != nil {
+		return err
+	}
+	// check if user id in the transaction is the same as the user id in the token
+	if transaction.UserID != userID {
+		return errors.New("you are not authorized to delete this transaction")
+	}
+	// call repository to delete
+	err = ts.transactionRepo.DeleteTransaction(id, transaction.AccountID, transaction.Amount)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // UpdateTransaction implements TransactionService
@@ -64,9 +84,6 @@ func (ts *transactionService) UpdateTransaction(newTransaction dto.TransactionDT
 			return err
 		}
 	}
-	fmt.Println(account)
-	fmt.Println(account.Balance)
-
 
 	// check if category id
 	if newSubCategory.CategoryID == 2 {

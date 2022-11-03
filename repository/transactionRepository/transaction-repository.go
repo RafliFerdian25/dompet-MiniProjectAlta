@@ -5,6 +5,7 @@ import (
 )
 
 type TransactionRepository interface {
+	DeleteTransaction(id, accountID uint, amountTransaction float64) error
 	UpdateTransaction(newTransaction dto.TransactionDTO, oldTransaction dto.TransactionJoin, newAccount dto.AccountDTO) error
 	GetTransactionById(id uint) (dto.TransactionJoin, error)
 	GetSubCategoryById(id uint) (dto.SubCategoryDTO, error)

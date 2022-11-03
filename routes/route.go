@@ -102,6 +102,7 @@ func New(db *gorm.DB) *echo.Echo {
 	appTransaction := app.Group("/transactions", middleware.JWTWithConfig(config))
 	appTransaction.POST("",transactionController.CreateTransaction)
 	appTransaction.PUT("/:id", transactionController.UpdateTransaction)
+	appTransaction.DELETE("/:id", transactionController.DeleteTransaction)
 
 	return app
 }
