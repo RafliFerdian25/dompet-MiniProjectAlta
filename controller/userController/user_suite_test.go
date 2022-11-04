@@ -2,6 +2,8 @@ package userController
 
 import (
 	"bytes"
+	"dompet-miniprojectalta/helper"
+	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 	"dompet-miniprojectalta/service/userService/userMock"
 	"encoding/json"
@@ -10,6 +12,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
@@ -32,55 +35,51 @@ func (s *suiteUsers) SetupSuite() {
 func (s *suiteUsers) TestCreateUsers() {
 	testCase := []struct {
 		Name               string
-		ExpectedStatusCode int
 		Method             string
-		Body               model.User
+		Body               dto.UserDTO
+		mockParam dto.UserDTO
 		HasReturnBody      bool
+		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
 		{
 			"success",
-			http.StatusOK,
 			"POST",
-			model.User{
+			dto.UserDTO{
+				Name:     "rafli",
+				Email:    "rafli@gmail.com",
+				Password: "123456",
+			},
+			dto.UserDTO{
 				Name:     "rafli",
 				Email:    "rafli@gmail.com",
 				Password: "123456",
 			},
 			true,
+			http.StatusOK,
 			"success",
 		},
 		{
 			"failCreate",
-			http.StatusInternalServerError,
 			"POST",
-			model.User{
+			dto.UserDTO{
 				Name: "rafli",
-				// Email:    "rafli@gmail.com",
+				Email:    "rafli@gmail.com",
+				Password: "123456",
+			},
+			dto.UserDTO{
+				Name: "rafli",
+				Email:    "rafli@gmail.com",
 				Password: "123456",
 			},
 			false,
+			http.StatusInternalServerError,
 			"Failed",
 		},
 	}
 
 	for _, v := range testCase {
-		var mockUser model.User
-		switch v.Name {
-		case "success":
-			mockUser = model.User{
-				Name: "rafli",
-				Email:    "rafli@gmail.com",
-				Password: "123456",
-			}
-		case "failCreate":
-			mockUser = model.User{
-				Name: "rafli",
-				// Email:    "rafli@gmail.com",
-				Password: "123456",
-			}
-		}
-		var mockCall = s.mock.On("CreateUser", mockUser)
+		var mockCall = s.mock.On("CreateUser", v.mockParam)
 		switch v.Name {
 		case "success":
 			mockCall.Return(nil)
@@ -95,6 +94,9 @@ func (s *suiteUsers) TestCreateUsers() {
 
 			// handler echo
 			e := echo.New()
+			e.Validator = &helper.CustomValidator{
+				Validator: validator.New(),
+			}
 			ctx := e.NewContext(r, w)
 
 			err := s.userController.CreateUser(ctx)

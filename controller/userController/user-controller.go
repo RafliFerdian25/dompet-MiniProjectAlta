@@ -27,7 +27,7 @@ func (u *UserController) CreateUser(c echo.Context) error {
 	// validate data user
 	err = c.Validate(user)
 	if err != nil {
-		return c.JSON(500, echo.Map{
+		return c.JSON(http.StatusBadRequest, echo.Map{
 			"message": "There is an empty field",
 			"error":   err.Error(),
 		})
