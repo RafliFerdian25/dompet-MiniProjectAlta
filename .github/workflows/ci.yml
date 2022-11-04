@@ -1,16 +1,20 @@
 name: ini ci golang
 on:
+  push:
+    branches:
+      - development
   pull_request:
     branches:
-      - "main"
-      - "development"
+      - main
+      - development
 jobs:
   testing:
     runs-on: ubuntu-latest
     name: "ini unitest"
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
+      - name: "setup go"
+        uses: actions/setup-go@v3
         with:
           go-version: 1.19
       - name: run unit test

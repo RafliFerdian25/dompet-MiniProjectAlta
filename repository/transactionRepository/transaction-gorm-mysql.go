@@ -21,9 +21,9 @@ func (tr *transactionRepository) DeleteTransaction(id, accountID uint, amountTra
 	}
 	account.Balance -= amountTransaction
 
-	tr.db.Transaction(func(tx *gorm.DB) error {
+	err := tr.db.Transaction(func(tx *gorm.DB) error {
 		// update account balance
-		err := tr.db.Model(&model.Account{}).Where("id = ?", accountID).Update("balance", account.Balance)
+		err := tx.Model(&model.Account{}).Where("id = ?", accountID).Update("balance", account.Balance)
 		if err.Error != nil {
 			return err.Error
 		}
@@ -32,7 +32,7 @@ func (tr *transactionRepository) DeleteTransaction(id, accountID uint, amountTra
 		}
 
 		// delete transaction
-		errDelete := tr.db.Delete(&model.Transaction{}, id)
+		errDelete := tx.Delete(&model.Transaction{}, id)
 		if errDelete.Error != nil {
 			return errDelete.Error
 		}
@@ -41,14 +41,17 @@ func (tr *transactionRepository) DeleteTransaction(id, accountID uint, amountTra
 		}
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // UpdateTransaction implements TransactionRepository
 func (tr *transactionRepository) UpdateTransaction(newTransaction dto.TransactionDTO, oldTransaction dto.TransactionJoin, newAccount dto.AccountDTO) error {
-	tr.db.Transaction(func(tx *gorm.DB) error {
+	err := tr.db.Transaction(func(tx *gorm.DB) error {
 		// update transaction
-		err := tr.db.Model(&model.Transaction{}).Where("id = ?", newTransaction.ID).Updates(model.Transaction{
+		err := tx.Model(&model.Transaction{}).Where("id = ?", newTransaction.ID).Updates(model.Transaction{
 			SubCategoryID: newTransaction.SubCategoryID,
 			AccountID:     newTransaction.AccountID,
 			Amount:        newTransaction.Amount,
@@ -66,7 +69,7 @@ func (tr *transactionRepository) UpdateTransaction(newTransaction dto.Transactio
 				return errGetOldAccount
 			}
 			oldAccount.Balance -= oldTransaction.Amount
-			err := tr.db.Model(&model.Account{}).Where("id = ?", oldTransaction.AccountID).Update("balance", oldAccount.Balance)
+			err := tx.Model(&model.Account{}).Where("id = ?", oldTransaction.AccountID).Update("balance", oldAccount.Balance)
 			if err.Error != nil {
 				return err.Error
 			}
@@ -80,7 +83,7 @@ func (tr *transactionRepository) UpdateTransaction(newTransaction dto.Transactio
 
 		// update new account balance transaction
 		newAccount.Balance += newTransaction.Amount
-		errUpdate := tr.db.Model(&model.Account{}).Where("id = ?", newTransaction.AccountID).Update("balance", newAccount.Balance)
+		errUpdate := tx.Model(&model.Account{}).Where("id = ?", newTransaction.AccountID).Update("balance", newAccount.Balance)
 		if errUpdate.Error != nil {
 			return errUpdate.Error
 		}
@@ -90,8 +93,10 @@ func (tr *transactionRepository) UpdateTransaction(newTransaction dto.Transactio
 
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 	return nil
-
 }
 
 // GetTransactionById implements TransactionRepository
@@ -129,9 +134,9 @@ func (tr *transactionRepository) GetAccountById(id uint) (dto.AccountDTO, error)
 
 // CreateTransaction implements TransactionRepository
 func (tr *transactionRepository) CreateTransaction(transaction dto.TransactionDTO, categoryId uint, account dto.AccountDTO) error {
-	tr.db.Transaction(func(tx *gorm.DB) error {
+	err := tr.db.Transaction(func(tx *gorm.DB) error {
 		// save transaction
-		if err := tr.db.Model(&model.Transaction{}).Create(&model.Transaction{
+		if err := tx.Model(&model.Transaction{}).Create(&model.Transaction{
 			UserID:        transaction.UserID,
 			SubCategoryID: transaction.SubCategoryID,
 			AccountID:     transaction.AccountID,
@@ -142,7 +147,7 @@ func (tr *transactionRepository) CreateTransaction(transaction dto.TransactionDT
 		}
 		// update account balance
 		account.Balance += transaction.Amount
-		err := tr.db.Model(&model.Account{}).Where("id = ?", account.ID).Update("balance", account.Balance)
+		err := tx.Model(&model.Account{}).Where("id = ?", account.ID).Update("balance", account.Balance)
 		if err.Error != nil {
 			return err.Error
 		}
@@ -152,6 +157,9 @@ func (tr *transactionRepository) CreateTransaction(transaction dto.TransactionDT
 
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

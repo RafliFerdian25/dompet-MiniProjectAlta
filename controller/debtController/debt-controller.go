@@ -5,6 +5,7 @@ import (
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/service/debtService"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -13,6 +14,38 @@ import (
 type DebtController struct {
 	DebtService debtService.DebtService
 }
+
+// delete debt controller
+func (dc *DebtController) DeleteDebt(c echo.Context) error {
+	// Get id from url
+	paramId := c.Param("id")
+	id, err := strconv.Atoi(paramId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "fail get id",
+			"error":   err.Error(),
+		})
+	}
+
+	// Get user id from jwt
+	userId, _ := helper.GetJwt(c)
+
+	// call service to delete the debt
+	err = dc.DebtService.DeleteDebt(uint(id), userId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail delete transaction",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+	})
+
+}
+
 
 func (dc *DebtController) CreateDebt(c echo.Context) error {
 	var debtTrans dto.DebtTransactionDTO

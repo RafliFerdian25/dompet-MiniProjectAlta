@@ -6,6 +6,7 @@ import (
 	"dompet-miniprojectalta/controller/categoryController"
 	"dompet-miniprojectalta/controller/debtController"
 	"dompet-miniprojectalta/controller/subCategoryController"
+	"dompet-miniprojectalta/controller/transactionAccController"
 	"dompet-miniprojectalta/controller/transactionController"
 	"dompet-miniprojectalta/controller/userController"
 	"dompet-miniprojectalta/helper"
@@ -13,12 +14,14 @@ import (
 	"dompet-miniprojectalta/repository/categoryRepository"
 	"dompet-miniprojectalta/repository/debtRepository"
 	"dompet-miniprojectalta/repository/subCategoryRepository"
+	"dompet-miniprojectalta/repository/transactionAccRepository"
 	"dompet-miniprojectalta/repository/transactionRepository"
 	"dompet-miniprojectalta/repository/userRepository"
 	"dompet-miniprojectalta/service/accountService"
 	"dompet-miniprojectalta/service/categoryService"
 	"dompet-miniprojectalta/service/debtService"
 	"dompet-miniprojectalta/service/subCategoryService"
+	"dompet-miniprojectalta/service/transactionAccService"
 	"dompet-miniprojectalta/service/transactionService"
 	"dompet-miniprojectalta/service/userService"
 
@@ -40,6 +43,7 @@ func New(db *gorm.DB) *echo.Echo {
 	accountRepository := accountRepository.NewAccountRepository(db)
 	transactionRepository := transactionRepository.NewTransactionRepository(db)
 	debtRepository := debtRepository.NewDebtRepository(db)
+	transAccRepository := transactionAccRepository.NewTransAccRepo(db)
 
 	// Services
 	userService := userService.NewUserService(userRepository)
@@ -48,6 +52,7 @@ func New(db *gorm.DB) *echo.Echo {
 	accountService := accountService.NewAccountService(accountRepository)
 	transactionService := transactionService.NewTransactionService(transactionRepository)
 	debtService := debtService.NewDebtService(debtRepository, accountRepository, subcategoryRepository)
+	transAccService := transactionAccService.NewTransAccService(transAccRepository, accountRepository)
 
 	// Controllers
 	userController := userController.UserController{
@@ -67,6 +72,9 @@ func New(db *gorm.DB) *echo.Echo {
 	}
 	debtController := debtController.DebtController{
 		DebtService: debtService,
+	}
+	transAccController := transactionAccController.TransactionAccController{
+		TransAccService: transAccService,
 	}
 
 	app := echo.New()
@@ -115,7 +123,12 @@ func New(db *gorm.DB) *echo.Echo {
 	// Debt Routes
 	appDebt := app.Group("/debts", middleware.JWTWithConfig(config))
 	appDebt.POST("", debtController.CreateDebt)
+	appDebt.DELETE("/:id", debtController.DeleteDebt)
 
+	//Transaction account Routes
+	appTransAcc := app.Group("/transaction-accounts", middleware.JWTWithConfig(config)) 
+	appTransAcc.POST("", transAccController.CreateTransactionAccount)
+	appTransAcc.DELETE("/:id", transAccController.DeleteTransactionAccount)
 
 	return app
 }

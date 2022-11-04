@@ -12,6 +12,44 @@ type debtRepository struct {
 	db *gorm.DB
 }
 
+// DeleteDebt implements DebtRepostory
+func (dr *debtRepository) DeleteDebt(id uint, account dto.AccountDTO) error {
+	err := dr.db.Transaction(func(tx *gorm.DB) error {
+		// update account balance
+		err := tx.Model(&model.Account{}).Where("id = ?", account.ID).Update("balance", account.Balance)
+		if err.Error != nil {
+			return err.Error
+		}
+		if err.RowsAffected <= 0 {
+			return errors.New("old account not found")
+		}
+
+		// delete transaction
+		err = tx.Model(&model.Transaction{}).Where("debt_id = ?", id).Delete(&model.Transaction{})
+		if err.Error != nil {
+			return err.Error
+		}
+		if err.RowsAffected <= 0 {
+			return errors.New("transaction not found")
+		}
+
+		// delete debt
+		err = tx.Model(&model.Debt{}).Where("id = ?", id).Delete(&model.Debt{})
+		if err.Error != nil {
+			return err.Error
+		}
+		if err.RowsAffected <= 0 {
+			return errors.New("debt not found")
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetDebtById implements DebtRepostory
 func (dr *debtRepository) GetDebtById(id uint) (dto.Debt, error) {
 	var debt dto.Debt
@@ -24,7 +62,7 @@ func (dr *debtRepository) GetDebtById(id uint) (dto.Debt, error) {
 
 // CreateDebt implements DebtRepository
 func (dr *debtRepository) CreateDebt(debt dto.Debt, transaction dto.TransactionDTO, account dto.AccountDTO) error {
-	dr.db.Transaction(func(tx *gorm.DB) error {
+	err := dr.db.Transaction(func(tx *gorm.DB) error {
 		var debtModel model.Debt
 		// check if debt is new or not
 		if transaction.DebtID == 0 {
@@ -37,14 +75,14 @@ func (dr *debtRepository) CreateDebt(debt dto.Debt, transaction dto.TransactionD
 				Status:     debt.Status,
 			}
 			// save debt transaction
-			err := dr.db.Model(&model.Debt{}).Create(&debtModel).Error
+			err := tx.Model(&model.Debt{}).Create(&debtModel).Error
 			if err != nil {
 				return err
 			}
 		} else {
 			debtModel.ID = debt.ID
 			// update debt transaction
-			err := dr.db.Model(&model.Debt{}).Select("Total","Remaining","DebtStatus").Where("id = ?", transaction.DebtID).Updates(model.Debt{
+			err := tx.Model(&model.Debt{}).Select("Total", "Remaining", "DebtStatus").Where("id = ?", transaction.DebtID).Updates(model.Debt{
 				Total:      debt.Total,
 				Remaining:  debt.Remaining,
 				DebtStatus: debt.DebtStatus,
@@ -56,7 +94,7 @@ func (dr *debtRepository) CreateDebt(debt dto.Debt, transaction dto.TransactionD
 
 		// save transaction
 		transaction.DebtID = debtModel.ID
-		err := dr.db.Model(&model.Transaction{}).Create(&model.Transaction{
+		err := tx.Model(&model.Transaction{}).Create(&model.Transaction{
 			UserID:        transaction.UserID,
 			DebtID:        transaction.DebtID,
 			SubCategoryID: transaction.SubCategoryID,
@@ -69,7 +107,7 @@ func (dr *debtRepository) CreateDebt(debt dto.Debt, transaction dto.TransactionD
 		}
 
 		// update account balance
-		errUpdate := dr.db.Model(&model.Account{}).Where("id = ?", account.ID).Update("balance", account.Balance)
+		errUpdate := tx.Model(&model.Account{}).Where("id = ?", account.ID).Update("balance", account.Balance)
 		if errUpdate.Error != nil {
 			return errUpdate.Error
 		}
@@ -79,6 +117,9 @@ func (dr *debtRepository) CreateDebt(debt dto.Debt, transaction dto.TransactionD
 
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

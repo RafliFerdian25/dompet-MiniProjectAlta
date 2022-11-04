@@ -10,6 +10,7 @@ import (
 )
 
 type DebtService interface {
+	DeleteDebt(id, userId uint) error
 	CreateDebt(debtTransaction dto.DebtTransactionDTO) error
 }
 
@@ -17,6 +18,37 @@ type debtService struct {
 	debtRepo        debtRepository.DebtRepostory
 	accountRepo     accountRepository.AccountRepository
 	subCategoryRepo subCategoryRepository.SubCategoryRepository
+}
+
+// DeleteDebt implements DebtService
+func (ds *debtService) DeleteDebt(id uint, userID uint) error {
+	// get old debt
+	debt, err := ds.debtRepo.GetDebtById(id)
+	if err != nil {
+		return err
+	}
+
+	// check if user id in the debt is the same as the user id in the token
+	if debt.Transactions[0].UserID != userID {
+		return errors.New("you are not authorized to delete this debt")
+	}
+
+	// get data account
+	account, err := ds.accountRepo.GetAccountById(debt.Transactions[0].AccountID)
+	if err != nil {
+		return err
+	}
+	if account.Balance - debt.Total < 0  {
+		return errors.New("Not enough balance")
+	}
+	account.Balance -= debt.Total
+
+	// call repository to delete
+	err = ds.debtRepo.DeleteDebt(id, account)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // CreateDebt implements DebtService
@@ -62,6 +94,16 @@ func (ds *debtService) CreateDebt(debtTransaction dto.DebtTransactionDTO) error 
 		if err != nil {
 			return err
 		}
+		//
+		if debt.Status == "debt" {
+			if debtTransaction.SubCategoryID == 3 || debtTransaction.SubCategoryID == 4 {
+				return errors.New("you cannot change sub category")
+			}
+		} else if debt.Status == "loan" {
+			if debtTransaction.SubCategoryID == 1 || debtTransaction.SubCategoryID == 2 {
+				return errors.New("you cannot change sub category")
+			}
+		}
 		// check if user id in the debt is the same as the user id in the transaction
 		if debt.Transactions[0].UserID != debtTransaction.UserID {
 			return errors.New("you are not authorized to use this debt")
@@ -73,7 +115,7 @@ func (ds *debtService) CreateDebt(debtTransaction dto.DebtTransactionDTO) error 
 		} else if debtTransaction.SubCategoryID == 2 || debtTransaction.SubCategoryID == 3 {
 			// check if amount is more than remaining
 			if (debtTransaction.Amount * -1) > debt.Remaining {
-				return errors.New(fmt.Sprint("Input amount is more than remaining debt. Unpaid amount is ", debtTransaction.Amount))
+				return errors.New(fmt.Sprint("Input amount is more than remaining debt. Unpaid amount is ", debt.Remaining))
 			}
 			debt.Remaining += debtTransaction.Amount
 			// check if remaining is 0
@@ -89,7 +131,7 @@ func (ds *debtService) CreateDebt(debtTransaction dto.DebtTransactionDTO) error 
 	// set model transaction
 	transaction := dto.TransactionDTO{
 		UserID:        debtTransaction.UserID,
-		DebtID: 	  debtTransaction.DebtID,
+		DebtID:        debtTransaction.DebtID,
 		SubCategoryID: debtTransaction.SubCategoryID,
 		AccountID:     debtTransaction.AccountID,
 		Amount:        debtTransaction.Amount,
@@ -106,8 +148,8 @@ func (ds *debtService) CreateDebt(debtTransaction dto.DebtTransactionDTO) error 
 // NewDebtService creates a new instance of debtService
 func NewDebtService(debtRepo debtRepository.DebtRepostory, accountRepo accountRepository.AccountRepository, subCategoryRepo subCategoryRepository.SubCategoryRepository) DebtService {
 	return &debtService{
-		debtRepo: debtRepo,
-		accountRepo: accountRepo,
+		debtRepo:        debtRepo,
+		accountRepo:     accountRepo,
 		subCategoryRepo: subCategoryRepo,
 	}
 }
