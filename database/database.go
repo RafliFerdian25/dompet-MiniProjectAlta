@@ -28,19 +28,19 @@ func ConnectDB() (*gorm.DB, error) {
 }
 
 func MigrateDB(db *gorm.DB) error {
-	err := db.Migrator().DropTable(
-		&model.Category{},
-		&model.User{},
-		model.SubCategory{},
-		model.Account{},
-		model.Debt{},
-		model.TransactionAccount{},
-		model.Transaction{},
-	)
-	if err != nil {
-		return err
-	}
-	err = db.AutoMigrate(
+	// errMigrator := db.Migrator().DropTable(
+	// 	&model.Category{},
+	// 	&model.User{},
+	// 	model.SubCategory{},
+	// 	model.Account{},
+	// 	model.Debt{},
+	// 	model.TransactionAccount{},
+	// 	model.Transaction{},
+	// )
+	// if errMigrator != nil {
+	// 	return errMigrator
+	// }
+	err := db.AutoMigrate(
 		model.User{},
 		model.Category{},
 		model.SubCategory{},

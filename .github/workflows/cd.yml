@@ -69,5 +69,5 @@ jobs:
           script: |
             sudo docker stop app
             sudo docker container rm app
-            sudo docker pull rafliferdian/dompet-miniproject:${{ steps.meta.outputs.tags }}
-            sudo docker run -d -v $PWD/.env:/.env -p 80:6969 --name app rafliferdian/dompet-miniproject:${{ steps.meta.outputs.tags }}
+            sudo docker pull rafliferdian/dompet-miniproject:latest
+            sudo docker run -d -v $PWD/.env:/.env -p 80:6969 --name app rafliferdian/dompet-miniproject:latest
