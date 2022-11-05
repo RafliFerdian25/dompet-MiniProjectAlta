@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type TransactionDTO struct {
 	ID            uint    `json:"id"`
 	UserID        uint    `json:"user_id"`
@@ -17,4 +19,14 @@ type TransactionJoin struct {
 	CategoryID    uint    `json:"category_id"`
 	AccountID     uint    `json:"account_id"`
 	Amount        float64 `json:"amount"`
+}
+
+type TransactionReport struct {
+	ID            uint      `json:"id"`
+	UserID        uint      `json:"user_id"`
+	SubCategoryID uint      `json:"sub_category_id"`
+	CategoryID    uint      `json:"category_id"`
+	AccountID     uint      `json:"account_id"`
+	Amount        float64   `json:"amount"`
+	CreatedAt     time.Time `json:"created_at"`
 }

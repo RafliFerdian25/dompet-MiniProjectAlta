@@ -1,6 +1,7 @@
 package accountService
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/repository/accountRepository"
 	"errors"
@@ -25,8 +26,10 @@ func (as *accountService) DeleteAccount(id, userId uint) error {
 	}
 	// check if user id in the account is the same as the user id in the token
 	if account.UserID != userId {
-		return errors.New("you are not authorized to delete this account")
+		return errors.New(constantError.ErrorNotAuthorized)
 	}
+
+	// call repository to delete account
 	err = as.accRepo.DeleteAccount(id)
 	if err != nil {
 		return err
@@ -51,9 +54,15 @@ func (as *accountService) UpdateAccount(account dto.AccountDTO) error {
 	}
 	// check if user id in the account is the same as the user id in the token
 	if account.UserID != dataAccount.UserID {
-		return errors.New("you are not authorized to update this account")
+		return errors.New(constantError.ErrorNotAuthorized)
 	}
 
+	// check if balance less than 0
+	if account.Balance < 0 {
+		return errors.New(constantError.ErrorBalanceLessThanZero)
+	}
+
+	// call repository to update account
 	err = as.accRepo.UpdateAccount(account)
 	if err != nil {
 		return err
@@ -63,6 +72,12 @@ func (as *accountService) UpdateAccount(account dto.AccountDTO) error {
 
 // CreateAccount implements AccountService
 func (as *accountService) CreateAccount(account dto.AccountDTO) error {
+	// check if balance less than 0
+	if account.Balance < 0 {
+		return errors.New(constantError.ErrorBalanceLessThanZero)
+	}
+	
+	// call repository to create account
 	err := as.accRepo.CreateAccount(account)
 	if err != nil {
 		return err

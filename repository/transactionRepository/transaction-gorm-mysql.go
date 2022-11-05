@@ -1,6 +1,7 @@
 package transactionRepository
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 	"errors"
@@ -13,22 +14,15 @@ type transactionRepository struct {
 }
 
 // DeleteTransaction implements TransactionRepository
-func (tr *transactionRepository) DeleteTransaction(id, accountID uint, amountTransaction float64) error {
-	// get account of transaction
-	account, errGetOldAccount := tr.GetAccountById(accountID)
-	if errGetOldAccount != nil {
-		return errGetOldAccount
-	}
-	account.Balance -= amountTransaction
-
+func (tr *transactionRepository) DeleteTransaction(id uint, account dto.AccountDTO) error {
 	err := tr.db.Transaction(func(tx *gorm.DB) error {
 		// update account balance
-		err := tx.Model(&model.Account{}).Where("id = ?", accountID).Update("balance", account.Balance)
+		err := tx.Model(&model.Account{}).Where("id = ?", account.ID).Update("balance", account.Balance)
 		if err.Error != nil {
 			return err.Error
 		}
 		if err.RowsAffected <= 0 {
-			return errors.New("old account not found")
+			return errors.New(constantError.ErrorAccountNotFound)
 		}
 
 		// delete transaction
@@ -37,7 +31,7 @@ func (tr *transactionRepository) DeleteTransaction(id, accountID uint, amountTra
 			return errDelete.Error
 		}
 		if errDelete.RowsAffected <= 0 {
-			return errors.New("transaction not found")
+			return errors.New(constantError.ErrorTransactionNotFound)
 		}
 		return nil
 	})
@@ -48,7 +42,7 @@ func (tr *transactionRepository) DeleteTransaction(id, accountID uint, amountTra
 }
 
 // UpdateTransaction implements TransactionRepository
-func (tr *transactionRepository) UpdateTransaction(newTransaction dto.TransactionDTO, oldTransaction dto.TransactionJoin, newAccount dto.AccountDTO) error {
+func (tr *transactionRepository) UpdateTransaction(newTransaction dto.TransactionDTO, oldTransaction dto.TransactionJoin, newAccount, oldAccount dto.AccountDTO) error {
 	err := tr.db.Transaction(func(tx *gorm.DB) error {
 		// update transaction
 		err := tx.Model(&model.Transaction{}).Where("id = ?", newTransaction.ID).Updates(model.Transaction{
@@ -56,41 +50,28 @@ func (tr *transactionRepository) UpdateTransaction(newTransaction dto.Transactio
 			AccountID:     newTransaction.AccountID,
 			Amount:        newTransaction.Amount,
 			Note:          newTransaction.Note,
-		}).Error
-		if err != nil {
-			return err
+		})
+		if err.Error != nil {
+			return err.Error
 		}
 
-		// check if account change
-		if newTransaction.AccountID != oldTransaction.AccountID {
-			// update old account balance transaction
-			oldAccount, errGetOldAccount := tr.GetAccountById(oldTransaction.AccountID)
-			if errGetOldAccount != nil {
-				return errGetOldAccount
-			}
-			oldAccount.Balance -= oldTransaction.Amount
-			err := tx.Model(&model.Account{}).Where("id = ?", oldTransaction.AccountID).Update("balance", oldAccount.Balance)
-			if err.Error != nil {
-				return err.Error
-			}
-			if err.RowsAffected <= 0 {
-				return errors.New("old account not found")
-			}
-		} else {
-			// change new transaction amount
-			newTransaction.Amount += (oldTransaction.Amount * -1)
+		// update old account balance transaction
+		err = tx.Model(&model.Account{}).Where("id = ?", oldAccount.ID).Update("balance", oldAccount.Balance)
+		if err.Error != nil {
+			return err.Error
+		}
+		if err.RowsAffected <= 0 {
+			return errors.New(constantError.ErrorOldAccountNotFound)
 		}
 
 		// update new account balance transaction
-		newAccount.Balance += newTransaction.Amount
 		errUpdate := tx.Model(&model.Account{}).Where("id = ?", newTransaction.AccountID).Update("balance", newAccount.Balance)
 		if errUpdate.Error != nil {
 			return errUpdate.Error
 		}
 		if errUpdate.RowsAffected <= 0 {
-			return errors.New("zaccount not found")
+			return errors.New(constantError.ErrorNewAccountNotFound)
 		}
-
 		return nil
 	})
 	if err != nil {
@@ -107,29 +88,9 @@ func (tr *transactionRepository) GetTransactionById(id uint) (dto.TransactionJoi
 		return dto.TransactionJoin{}, err.Error
 	}
 	if transaction.ID != id {
-		return dto.TransactionJoin{}, errors.New("transaction not found")
+		return dto.TransactionJoin{}, gorm.ErrRecordNotFound
 	}
 	return transaction, nil
-}
-
-// GetSubCategoryById implements TransactionRepository
-func (tr *transactionRepository) GetSubCategoryById(id uint) (dto.SubCategoryDTO, error) {
-	var subCategory dto.SubCategoryDTO
-	err := tr.db.Model(&model.SubCategory{}).First(&subCategory, id).Error
-	if err != nil {
-		return dto.SubCategoryDTO{}, errors.New("something went wrong when get sub category by id : " + err.Error())
-	}
-	return subCategory, nil
-}
-
-// GetAccountById implements TransactionRepository
-func (tr *transactionRepository) GetAccountById(id uint) (dto.AccountDTO, error) {
-	var account dto.AccountDTO
-	err := tr.db.Model(&model.Account{}).First(&account, id).Error
-	if err != nil {
-		return dto.AccountDTO{}, err
-	}
-	return account, nil
 }
 
 // CreateTransaction implements TransactionRepository
@@ -152,7 +113,7 @@ func (tr *transactionRepository) CreateTransaction(transaction dto.TransactionDT
 			return err.Error
 		}
 		if err.RowsAffected <= 0 {
-			return errors.New("subcategory not found")
+			return errors.New(constantError.ErrorAccountNotFound)
 		}
 
 		return nil

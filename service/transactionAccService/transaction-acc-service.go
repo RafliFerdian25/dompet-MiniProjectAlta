@@ -1,11 +1,11 @@
 package transactionAccService
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/repository/accountRepository"
 	"dompet-miniprojectalta/repository/transactionAccRepository"
 	"errors"
-	"fmt"
 )
 
 type TransactionAccService interface {
@@ -27,19 +27,23 @@ func (tas *transactionAccService) DeleteTransactionAccount(transAccID uint, user
 	}
 	// check if user id in the transaction is the same as the user id in the token
 	if transAcc.UserID != userID {
-		return errors.New("you are not authorized to delete this transaction")
+		return errors.New(constantError.ErrorNotAuthorized)
 	}
 
 	// get data account
 	accountFrom, errFrom := tas.accountRepo.GetAccountById(transAcc.AccountFromID)
-	accountTo, errTo := tas.accountRepo.GetAccountById(transAcc.AccountToID)
-	if errFrom != nil || errTo != nil {
-		return errors.New(fmt.Sprint(errFrom, errTo))
+	if errFrom != nil {
+		return errFrom
 	}
+	accountTo, errTo := tas.accountRepo.GetAccountById(transAcc.AccountToID)
+	if errTo != nil {
+		return errTo
+	}
+	
 
 	// check if balance account to is more than transaction amount
 	if accountTo.Balance < transAcc.Amount {
-		return errors.New("Not enough balance in account to")
+		return errors.New(constantError.ErrorRecipientAccountNotEnoughBalance)
 	}
 
 	// Update balance
@@ -58,23 +62,26 @@ func (tas *transactionAccService) DeleteTransactionAccount(transAccID uint, user
 func (tas *transactionAccService) CreateTransactionAccount(transAcc dto.TransactionAccount) error {
 	// check if accoount from and account to is same
 	if transAcc.AccountFromID == transAcc.AccountToID {
-		return errors.New("account from and account to is same")
+		return errors.New(constantError.ErrorSenderAndRecipientAccountIsSame)
 	}
 
 	// get data account
 	accountFrom, errFrom := tas.accountRepo.GetAccountById(transAcc.AccountFromID)
+	if errFrom != nil {
+		return errFrom
+	}
 	accountTo, errTo := tas.accountRepo.GetAccountById(transAcc.AccountToID)
-	if errFrom != nil || errTo != nil {
-		return errors.New(fmt.Sprint(errFrom, errTo))
+	if errTo != nil {
+		return errTo
 	}
 	// check if user id in the account is the same as the user id in the transaction
 	if accountFrom.UserID != transAcc.UserID || accountTo.UserID != transAcc.UserID {
-		return errors.New("you are not authorized to use this account")
+		return errors.New(constantError.ErrorNotAuthorized)
 	}
 
 	// check if balance is enough
 	if accountFrom.Balance < transAcc.Amount {
-		return errors.New("Not enough balance")
+		return errors.New(constantError.ErrorAccountNotEnoughBalance)
 	}
 
 	// update balance

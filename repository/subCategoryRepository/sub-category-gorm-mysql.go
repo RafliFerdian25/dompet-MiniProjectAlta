@@ -1,6 +1,7 @@
 package subCategoryRepository
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 	"errors"
@@ -17,6 +18,9 @@ func (sc *subCategoryRepository) GetSubCategoryById(id uint) (dto.SubCategoryDTO
 	var subCategory dto.SubCategoryDTO
 	err := sc.db.Model(&model.SubCategory{}).First(&subCategory, id).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.SubCategoryDTO{}, errors.New(constantError.ErrorSubCategoryNotFound)
+		}
 		return dto.SubCategoryDTO{}, err
 	}
 	return subCategory, nil
@@ -26,9 +30,9 @@ func (sc *subCategoryRepository) GetSubCategoryById(id uint) (dto.SubCategoryDTO
 func (sc *subCategoryRepository) GetSubCategoryByUser(userId uint) ([]dto.SubCategoryDTO, error) {
 	var SubCategoryUsers []dto.SubCategoryDTO
 	// get data sub category from database by user
-	err := sc.db.Model(&model.SubCategory{}).Where("user_id = ?", userId).Or("user_id IS NULL").Find(&SubCategoryUsers).Error
-	if err != nil {
-		return nil, err
+	err := sc.db.Model(&model.SubCategory{}).Where("user_id = ?", userId).Or("user_id IS NULL").Find(&SubCategoryUsers)
+	if err.Error != nil {
+		return nil, err.Error
 	}
 	return SubCategoryUsers, nil
 }
@@ -55,7 +59,7 @@ func (sc *subCategoryRepository) DeleteSubCategory(id uint) error {
 		return err.Error
 	}
 	if err.RowsAffected <= 0 {
-		return errors.New("subcategory not found")
+		return gorm.ErrRecordNotFound
 	}
 
 	return nil
@@ -71,8 +75,8 @@ func (sc *subCategoryRepository) UpdateSubCategory(subCategory dto.SubCategoryDT
 	if err.Error != nil {
 		return err.Error
 	}
-	if err.RowsAffected <= 0 {
-		return errors.New("subcategory not found")
+	if err.RowsAffected <= 0 {		
+		return gorm.ErrRecordNotFound
 	}
 
 	return nil

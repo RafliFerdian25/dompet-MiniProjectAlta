@@ -39,10 +39,11 @@ func (tar *transactionAccRepository) DeleteTransactionAccount(id uint, accountFr
 
 // GetTransactionAccountById implements TransactionAccRepository
 func (tar *transactionAccRepository) GetTransactionAccountById(id uint) (dto.TransactionAccount, error) {
+	// get transaction account
 	var transAcc dto.TransactionAccount
-	err := tar.db.Model(&model.TransactionAccount{}).First(&transAcc, id).Error
-	if err != nil {
-		return dto.TransactionAccount{}, err
+	err := tar.db.Model(&model.TransactionAccount{}).First(&transAcc, id)
+	if err.Error != nil {
+		return dto.TransactionAccount{}, err.Error
 	}
 	return transAcc, nil
 }

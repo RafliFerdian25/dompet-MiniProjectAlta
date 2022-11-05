@@ -1,6 +1,7 @@
 package debtRepository
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 	"errors"
@@ -21,7 +22,7 @@ func (dr *debtRepository) DeleteDebt(id uint, account dto.AccountDTO) error {
 			return err.Error
 		}
 		if err.RowsAffected <= 0 {
-			return errors.New("old account not found")
+			return errors.New(constantError.ErrorAccountNotFound)
 		}
 
 		// delete transaction
@@ -30,7 +31,7 @@ func (dr *debtRepository) DeleteDebt(id uint, account dto.AccountDTO) error {
 			return err.Error
 		}
 		if err.RowsAffected <= 0 {
-			return errors.New("transaction not found")
+			return errors.New(constantError.ErrorTransactionNotFound)
 		}
 
 		// delete debt
@@ -39,7 +40,7 @@ func (dr *debtRepository) DeleteDebt(id uint, account dto.AccountDTO) error {
 			return err.Error
 		}
 		if err.RowsAffected <= 0 {
-			return errors.New("debt not found")
+			return errors.New(constantError.ErrorDebtNotFound)
 		}
 
 		return nil
@@ -86,9 +87,9 @@ func (dr *debtRepository) CreateDebt(debt dto.Debt, transaction dto.TransactionD
 				Total:      debt.Total,
 				Remaining:  debt.Remaining,
 				DebtStatus: debt.DebtStatus,
-			}).Error
-			if err != nil {
-				return err
+			})
+			if err.Error != nil {
+				return err.Error
 			}
 		}
 
@@ -110,9 +111,6 @@ func (dr *debtRepository) CreateDebt(debt dto.Debt, transaction dto.TransactionD
 		errUpdate := tx.Model(&model.Account{}).Where("id = ?", account.ID).Update("balance", account.Balance)
 		if errUpdate.Error != nil {
 			return errUpdate.Error
-		}
-		if errUpdate.RowsAffected <= 0 {
-			return errors.New("subcategory not found")
 		}
 
 		return nil

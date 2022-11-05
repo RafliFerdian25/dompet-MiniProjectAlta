@@ -6,7 +6,7 @@ import (
 )
 
 type CategoryService interface {
-	GetSubCategoryByCategoryID(id uint) ([]model.Category, error)
+	GetCategoryByCategoryID(id uint) ([]model.Category, error)
 	GetAllCategory() ([]model.Category, error)
 }
 
@@ -14,8 +14,8 @@ type categoryService struct {
 	categoryRepository categoryRepository.CategoryRepository
 }
 
-// GetSubCategoryByCategoryID implements CategoryService
-func (cs *categoryService) GetSubCategoryByCategoryID(id uint) ([]model.Category, error) {
+// GetCategoryByCategoryID implements CategoryService
+func (cs *categoryService) GetCategoryByCategoryID(id uint) ([]model.Category, error) {
 	categoriesID, err := cs.categoryRepository.GetCategoryByID(id)
 	if err != nil {
 		return nil, err

@@ -1,6 +1,7 @@
 package accountRepository
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 	"errors"
@@ -20,7 +21,7 @@ func (ar *accountRepository) DeleteAccount(id uint) error {
 		return err.Error
 	}
 	if err.RowsAffected <= 0 {
-		return errors.New("account not found")
+		return gorm.ErrRecordNotFound
 	}
 
 	return nil
@@ -42,6 +43,9 @@ func (ar *accountRepository) GetAccountById(id uint) (dto.AccountDTO, error) {
 	var account dto.AccountDTO
 	err := ar.db.Model(&model.Account{}).First(&account, id).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return dto.AccountDTO{}, errors.New(constantError.ErrorAccountNotFound)
+		}
 		return dto.AccountDTO{}, err
 	}
 	return account, nil
@@ -57,7 +61,7 @@ func (ar *accountRepository) UpdateAccount(account dto.AccountDTO) error {
 		return err.Error
 	}
 	if err.RowsAffected <= 0 {
-		return errors.New("account not found")
+		return gorm.ErrRecordNotFound
 	}
 
 	return nil

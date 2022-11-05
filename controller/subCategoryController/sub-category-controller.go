@@ -1,6 +1,7 @@
 package subCategoryController
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/helper"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/service/subCategoryService"
@@ -41,6 +42,12 @@ func (sc *SubCategoryController) CreateSubCategory(c echo.Context) error {
 	// Call service to create sub category
 	err = sc.SubCategoryService.CreateSubCategory(subCategory)
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail create sub category",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail create sub category",
 			"error":   err.Error(),
@@ -61,6 +68,12 @@ func (sc *SubCategoryController) GetSubCategoryByUser(c echo.Context) error {
 	// get sub category by user from service
 	subCategories, err := sc.SubCategoryService.GetSubCategoryByUser(userId)
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get sub category by user",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get sub category by user",
 			"error":   err.Error(),
@@ -92,6 +105,12 @@ func (sc *SubCategoryController) DeleteSubCategory(c echo.Context) error {
 	// Call service to delete sub category
 	err = sc.SubCategoryService.DeleteSubCategory(uint(id), userId)
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail delete sub category",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail delete sub category",
 			"error":   err.Error(),
@@ -136,6 +155,12 @@ func (sc *SubCategoryController) UpdateSubCategory(c echo.Context) error {
 	// Call service to update sub category
 	err = sc.SubCategoryService.UpdateSubCategory(subCategory)
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail update sub category",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail update sub category",
 			"error":   err.Error(),
