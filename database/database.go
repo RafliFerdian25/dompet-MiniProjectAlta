@@ -28,7 +28,7 @@ func ConnectDB() (*gorm.DB, error) {
 }
 
 func MigrateDB(db *gorm.DB) error {
-	db.Migrator().DropTable(
+	err := db.Migrator().DropTable(
 		&model.Category{},
 		&model.User{},
 		model.SubCategory{},
@@ -37,7 +37,10 @@ func MigrateDB(db *gorm.DB) error {
 		model.TransactionAccount{},
 		model.Transaction{},
 	)
-	err := db.AutoMigrate(
+	if err != nil {
+		return err
+	}
+	err = db.AutoMigrate(
 		model.User{},
 		model.Category{},
 		model.SubCategory{},
