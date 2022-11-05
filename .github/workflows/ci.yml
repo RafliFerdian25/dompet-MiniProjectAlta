@@ -10,7 +10,7 @@ on:
 jobs:
   testing:
     runs-on: ubuntu-latest
-    name: "ini unitest"
+    name: "unitest"
     steps:
       - uses: actions/checkout@v3
       - name: "setup go"
