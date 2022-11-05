@@ -1,4 +1,4 @@
-name: ini CD golang
+name: CD golang
 on:
   push:
     branches:
