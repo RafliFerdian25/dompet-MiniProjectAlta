@@ -112,7 +112,7 @@ func New(db *gorm.DB) *echo.Echo {
 	appAccount.POST("", accountController.CreateAccount)
 	appAccount.PUT("/:id", accountController.UpdateAccount)
 	appAccount.DELETE("/:id", accountController.DeleteAccount)
-	appAccount.GET("/userid", accountController.GetAccountByUser)
+	appAccount.GET("/user", accountController.GetAccountByUser)
 
 	// Transaction Routes
 	appTransaction := app.Group("/transactions", middleware.JWTWithConfig(config))
