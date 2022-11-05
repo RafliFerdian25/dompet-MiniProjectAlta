@@ -62,7 +62,7 @@ jobs:
         if: github.ref != 'refs/heads/main'
         uses: appleboy/ssh-action@master
         with:
-          host: ec2-54-169-8-99.ap-southeast-1.compute.amazonaws.com
+          host: ${{ secrets.HOST_AWS }}
           username: ubuntu
           key: ${{ secrets.KEY_AWS }}
           port: 22
