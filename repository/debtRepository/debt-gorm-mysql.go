@@ -13,6 +13,16 @@ type debtRepository struct {
 	db *gorm.DB
 }
 
+// GetDebt implements DebtRepostory
+func (dr *debtRepository) GetDebt(userId uint, subCategory int, debtStatus string) ([]dto.GetDebtTransactionResponse, error) {
+	var debts []dto.GetDebtTransactionResponse
+	err := dr.db.Model(&model.Debt{}).Select("debts.id, debts.name, transactions.sub_category_id, transactions.account_id, debts.total, debts.remaining, debts.note, debts.created_at, debts.debt_status").Joins("JOIN transactions ON transactions.debt_id = debts.id").Where("debts.debt_status = ? AND transactions.sub_category_id = ? AND transactions.user_id = ?", debtStatus, subCategory, userId).Scan(&debts).Error
+	if err != nil {
+		return nil, err
+	}
+	return debts, nil
+}
+
 // DeleteDebt implements DebtRepostory
 func (dr *debtRepository) DeleteDebt(id uint, account dto.AccountDTO) error {
 	err := dr.db.Transaction(func(tx *gorm.DB) error {

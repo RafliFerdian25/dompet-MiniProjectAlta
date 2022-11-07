@@ -1,6 +1,7 @@
 package debtService
 
 import (
+	"dompet-miniprojectalta/constant/constantCategory"
 	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/repository/accountRepository"
@@ -11,6 +12,7 @@ import (
 )
 
 type DebtService interface {
+	GetDebt(userId uint, debtStatus string) (map[string]interface{}, error)
 	DeleteDebt(id, userId uint) error
 	CreateDebt(debtTransaction dto.DebtTransactionDTO) error
 }
@@ -19,6 +21,30 @@ type debtService struct {
 	debtRepo        debtRepository.DebtRepostory
 	accountRepo     accountRepository.AccountRepository
 	subCategoryRepo subCategoryRepository.SubCategoryRepository
+}
+
+// GetDebt implements DebtService
+func (ds *debtService) GetDebt(userId uint, debtStatus string) (map[string]interface{}, error) {
+	// call repository to get the debt
+	debt, err := ds.debtRepo.GetDebt(userId, constantCategory.DeptSubCategory, debtStatus)
+	if err != nil {
+		return nil, err
+	}
+
+	// call repository to get the debt
+	loan, err := ds.debtRepo.GetDebt(userId, constantCategory.LoanSubCategory, debtStatus)
+	if err != nil {
+		return nil, err
+	}
+
+	// merge the debt and loan
+	data := map[string]interface{}{
+		"debt": debt,
+		"loan": loan,
+	}
+
+	// return response
+	return data, nil
 }
 
 // DeleteDebt implements DebtService
@@ -39,7 +65,7 @@ func (ds *debtService) DeleteDebt(id uint, userID uint) error {
 	if err != nil {
 		return err
 	}
-	if account.Balance - debt.Total < 0  {
+	if account.Balance-debt.Total < 0 {
 		return errors.New(constantError.ErrorAccountNotEnoughBalance)
 	}
 	account.Balance -= debt.Total
@@ -120,7 +146,6 @@ func (ds *debtService) CreateDebt(debtTransaction dto.DebtTransactionDTO) error 
 			}
 			debt.Remaining += debtTransaction.Amount
 			// check if remaining is 0
-			fmt.Println(debt.Remaining)
 			if debt.Remaining == 0 {
 				debt.DebtStatus = "paid"
 			}
