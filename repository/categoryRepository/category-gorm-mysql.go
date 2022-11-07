@@ -13,9 +13,12 @@ type categoryRepository struct {
 func (s *categoryRepository) GetCategoryByID(id uint) ([]model.Category, error) {
 	var CategoriesID []model.Category
 	// get data category from database by id
-	err := s.db.Model(&model.Category{}).Preload("SubCategories").Where("id = ?", id).Find(&CategoriesID).Error
-	if err != nil {
-		return nil, err
+	err := s.db.Model(&model.Category{}).Preload("SubCategories").Where("id = ?", id).Find(&CategoriesID)
+	if err.Error != nil {
+		return nil, err.Error
+	}
+	if err.RowsAffected <= 0 {
+		return nil, gorm.ErrRecordNotFound
 	}
 	return CategoriesID, nil
 }

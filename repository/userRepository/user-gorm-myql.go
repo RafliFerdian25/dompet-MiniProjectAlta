@@ -1,6 +1,7 @@
 package userRepository
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/helper"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
@@ -30,13 +31,13 @@ func (u *userRepository) CreateUser(user dto.UserDTO) error {
 // LoginUser implements UserRepository
 func (u *userRepository) LoginUser(user model.User) (model.User, error) {
 	var userLogin model.User
-	err := u.db.Model(&model.User{}).Where("email = ?", user.Email).Find(&userLogin).Error
+	err := u.db.Model(&model.User{}).First(&userLogin, "email = ?", user.Email).Error
 	if err != nil {
 		return model.User{}, err
 	}
 	match := helper.CheckPasswordHash(user.Password, userLogin.Password)
 	if !match {
-		return model.User{}, errors.New("email or password not match")
+		return model.User{}, errors.New(constantError.ErrorEmailOrPasswordNotMatch)
 	}
 	return userLogin, nil
 }

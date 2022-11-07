@@ -1,6 +1,7 @@
 package userController
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/helper"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
@@ -35,7 +36,13 @@ func (u *UserController) CreateUser(c echo.Context) error {
 
 	err = u.UserService.CreateUser(user)
 	if err != nil {
-		return c.JSON(500, echo.Map{
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail create user",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail create user",
 			"error":   err.Error(),
 		})
@@ -50,7 +57,7 @@ func (u *UserController) LoginUser(c echo.Context) error {
 	var user model.User
 	err := c.Bind(&user)
 	if err != nil {
-		return c.JSON(500, echo.Map{
+		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail bind data",
 			"error":   err.Error(),
 		})
@@ -58,7 +65,13 @@ func (u *UserController) LoginUser(c echo.Context) error {
 
 	user, err = u.UserService.LoginUser(user)
 	if err != nil {
-		return c.JSON(500, echo.Map{
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail login",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail login",
 			"error":   err.Error(),
 		})
@@ -73,14 +86,8 @@ func (u *UserController) LoginUser(c echo.Context) error {
 		})
 	}
 
-	userLogin := dto.UserDTO{
-		Name:  user.Name,
-		Email: user.Email,
-	}
-
 	return c.JSON(200, echo.Map{
-		"message": "success",
-		"user":    userLogin,
+		"message": "success login",
 		"token":   token,
 	})
 }

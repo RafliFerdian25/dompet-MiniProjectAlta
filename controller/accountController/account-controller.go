@@ -1,6 +1,7 @@
 package accountController
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/helper"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/service/accountService"
@@ -32,6 +33,12 @@ func (ac *AccountController) DeleteAccount(c echo.Context) error {
 	// Call service to delete account
 	err = ac.AccountService.DeleteAccount(uint(id), userId)
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail delete account",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail delete account",
 			"error":   err.Error(),
@@ -52,6 +59,12 @@ func (ac *AccountController) GetAccountByUser(c echo.Context) error {
 	// get account by user from service
 	userAccounts, err := ac.AccountService.GetAccountByUser(userId)
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get account by user",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get account by user",
 			"error":   err.Error(),
@@ -97,6 +110,12 @@ func (ac *AccountController) UpdateAccount(c echo.Context) error {
 	// Call service to update account
 	err = ac.AccountService.UpdateAccount(account)
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail update account",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail update account",
 			"error":   err.Error(),
@@ -136,6 +155,12 @@ func (ac *AccountController) CreateAccount(c echo.Context) error {
 	// Call service to create account
 	err = ac.AccountService.CreateAccount(account)
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail create account",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail create account",
 			"error":   err.Error(),

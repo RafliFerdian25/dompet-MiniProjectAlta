@@ -1,6 +1,7 @@
 package categoryController
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/service/categoryService"
 	"net/http"
 	"strconv"
@@ -10,21 +11,6 @@ import (
 
 type CategoryController struct {
 	CategoryService categoryService.CategoryService
-}
-
-func (cc *CategoryController) GetAllCategory(c echo.Context) error {
-	categories, err := cc.CategoryService.GetAllCategory()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail get all category",
-			"error":   err.Error(),
-		})
-	}
-
-	return c.JSON(http.StatusOK, echo.Map{
-		"message":   "success",
-		"categories": categories,
-	})
 }
 
 func (cc *CategoryController) GetCategoryByID(c echo.Context) error  {
@@ -40,8 +26,14 @@ func (cc *CategoryController) GetCategoryByID(c echo.Context) error  {
 	}
 
 	// get category by id from service
-	categoriesID, err := cc.CategoryService.GetSubCategoryByCategoryID(uint(categoryID))
+	categoriesID, err := cc.CategoryService.GetCategoryByCategoryID(uint(categoryID))
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get category by id",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get category by id",
 			"error":   err.Error(),
@@ -54,3 +46,25 @@ func (cc *CategoryController) GetCategoryByID(c echo.Context) error  {
 		"categories": categoriesID,
 	})
 }
+
+func (cc *CategoryController) GetAllCategory(c echo.Context) error {
+	categories, err := cc.CategoryService.GetAllCategory()
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get all category",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get all category",
+			"error":   err.Error(),
+		})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"message":   "success",
+		"categories": categories,
+	})
+}
+

@@ -1,12 +1,12 @@
 package debtController
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/helper"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/service/debtService"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -33,6 +33,12 @@ func (dc *DebtController) DeleteDebt(c echo.Context) error {
 	// call service to delete the debt
 	err = dc.DebtService.DeleteDebt(uint(id), userId)
 	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail delete transaction",
+				"error":   err.Error(),
+			})
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail delete transaction",
 			"error":   err.Error(),
@@ -85,15 +91,12 @@ func (dc *DebtController) CreateDebt(c echo.Context) error {
 	// check if there is an error create transaction
 	if err != nil {
 		// Check if there is an error client
-		errAuthorized := strings.Contains(err.Error(), "authorized")
-		errCategory := strings.Contains(err.Error(), "change category")
-		errBalance := strings.Contains(err.Error(), "enough balance")
-		if errAuthorized || errCategory || errBalance {
-			return c.JSON(http.StatusBadRequest, echo.Map{
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
 				"message": "fail create transaction",
 				"error":   err.Error(),
 			})
-		} 
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail create transaction",
 			"error":   err.Error(),

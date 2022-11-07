@@ -1,12 +1,12 @@
 package transactionAccController
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/helper"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/service/transactionAccService"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -34,15 +34,14 @@ func (tac *TransactionAccController) DeleteTransactionAccount(c echo.Context) er
 	err = tac.TransAccService.DeleteTransactionAccount(uint(id), userId)
 	if err != nil {
 		// check if there is an error client
-		errClient := strings.Contains(err.Error(), "client :")
-		if errClient {
-			return c.JSON(http.StatusBadRequest, echo.Map{
-				"message": "fail delete transaction",
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail delete transaction account",
 				"error":   err.Error(),
 			})
 		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail delete transaction",
+			"message": "fail delete transaction account",
 			"error":   err.Error(),
 		})
 	}
@@ -83,17 +82,14 @@ func (tac *TransactionAccController) CreateTransactionAccount(c echo.Context) er
 	// check if there is an error create transaction
 	if err != nil {
 		// Check if there is an error client
-		errAuthorized := strings.Contains(err.Error(), "authorized")
-		errCategory := strings.Contains(err.Error(), "change category")
-		errBalance := strings.Contains(err.Error(), "enough balance")
-		if errAuthorized || errCategory || errBalance {
-			return c.JSON(http.StatusBadRequest, echo.Map{
-				"message": "fail create transaction",
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail create transaction account",
 				"error":   err.Error(),
 			})
-		} 
+		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail create transaction",
+			"message": "fail create transaction account",
 			"error":   err.Error(),
 		})
 	}

@@ -1,6 +1,7 @@
 package debtService
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/repository/accountRepository"
 	"dompet-miniprojectalta/repository/debtRepository"
@@ -30,7 +31,7 @@ func (ds *debtService) DeleteDebt(id uint, userID uint) error {
 
 	// check if user id in the debt is the same as the user id in the token
 	if debt.Transactions[0].UserID != userID {
-		return errors.New("you are not authorized to delete this debt")
+		return errors.New(constantError.ErrorNotAuthorized)
 	}
 
 	// get data account
@@ -39,7 +40,7 @@ func (ds *debtService) DeleteDebt(id uint, userID uint) error {
 		return err
 	}
 	if account.Balance - debt.Total < 0  {
-		return errors.New("Not enough balance")
+		return errors.New(constantError.ErrorAccountNotEnoughBalance)
 	}
 	account.Balance -= debt.Total
 
@@ -60,14 +61,14 @@ func (ds *debtService) CreateDebt(debtTransaction dto.DebtTransactionDTO) error 
 	}
 	// check if user id in the account is the same as the user id in the transaction
 	if account.UserID != debtTransaction.UserID {
-		return errors.New("you are not authorized to use this account")
+		return errors.New(constantError.ErrorNotAuthorized)
 	}
 
 	// check if the sub category is make expense
 	if debtTransaction.SubCategoryID == 2 || debtTransaction.SubCategoryID == 3 {
 		// check if balance is enough
 		if debtTransaction.Amount > account.Balance {
-			return errors.New("Not enough balance")
+			return errors.New(constantError.ErrorAccountNotEnoughBalance)
 		}
 		debtTransaction.Amount *= -1
 	}
@@ -97,16 +98,16 @@ func (ds *debtService) CreateDebt(debtTransaction dto.DebtTransactionDTO) error 
 		//
 		if debt.Status == "debt" {
 			if debtTransaction.SubCategoryID == 3 || debtTransaction.SubCategoryID == 4 {
-				return errors.New("you cannot change sub category")
+				return errors.New(constantError.ErrorCannotChangeSubCategory)
 			}
 		} else if debt.Status == "loan" {
 			if debtTransaction.SubCategoryID == 1 || debtTransaction.SubCategoryID == 2 {
-				return errors.New("you cannot change sub category")
+				return errors.New(constantError.ErrorCannotChangeSubCategory)
 			}
 		}
 		// check if user id in the debt is the same as the user id in the transaction
 		if debt.Transactions[0].UserID != debtTransaction.UserID {
-			return errors.New("you are not authorized to use this debt")
+			return errors.New(constantError.ErrorNotAuthorized)
 		}
 		// check if the sub category is make total increase or remaining decrease
 		if debtTransaction.SubCategoryID == 1 || debtTransaction.SubCategoryID == 4 {

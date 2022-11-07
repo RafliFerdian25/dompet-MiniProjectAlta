@@ -1,6 +1,7 @@
 package subCategoryService
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/repository/subCategoryRepository"
 	"errors"
@@ -16,8 +17,6 @@ type SubCategoryService interface {
 type subCategoryService struct {
 	subCategoryRepository subCategoryRepository.SubCategoryRepository
 }
-
-
 
 // GetSubCategoryByUser implements SubCategoryService
 func (sc *subCategoryService) GetSubCategoryByUser(userId uint) ([]dto.SubCategoryDTO, error) {
@@ -45,7 +44,7 @@ func (sc *subCategoryService) DeleteSubCategory(id uint, userId uint) error {
 	}
 	// check if user id in the subcategory is the same as the user id in the token
 	if subCategory.UserID != userId {
-		return errors.New("you are not authorized to delete this subcategory")
+		return errors.New(constantError.ErrorNotAuthorized)
 	}
 	err = sc.subCategoryRepository.DeleteSubCategory(id)
 	if err != nil {
@@ -62,7 +61,7 @@ func (sc *subCategoryService) UpdateSubCategory(subCategory dto.SubCategoryDTO) 
 	}
 	// check if user id in the subcategory is the same as the user id in the token
 	if subCategory.UserID != dataSubCategory.UserID {
-		return errors.New("you are not authorized to update this subcategory")
+		return errors.New(constantError.ErrorNotAuthorized)
 	}
 
 	err = sc.subCategoryRepository.UpdateSubCategory(subCategory)
