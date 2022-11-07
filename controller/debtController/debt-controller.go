@@ -15,6 +15,50 @@ type DebtController struct {
 	DebtService debtService.DebtService
 }
 
+// get debt controller
+func (dc *DebtController) GetDebt(c echo.Context) error {
+	// get query parameters
+	debtStatus := c.QueryParam("debt_status") 
+	if debtStatus == "" {
+		return c.JSON(http.StatusBadRequest, echo.Map{
+			"message": "fail get debt",
+			"error":   "debt status is required",
+		})
+	} else {
+		if debtStatus != "paid" && debtStatus != "unpaid" {
+			return c.JSON(http.StatusBadRequest, echo.Map{
+				"message": "fail get debt",
+				"error":   "debt status is invalid",
+			})
+			
+		}
+	}
+
+	// Get user id from jwt
+	userId, _ := helper.GetJwt(c)
+
+	// call service to get the debt
+	data, err := dc.DebtService.GetDebt(userId, debtStatus)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get debt",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get debt",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success",
+		"data":    data,
+	})
+}
+
 // delete debt controller
 func (dc *DebtController) DeleteDebt(c echo.Context) error {
 	// Get id from url
