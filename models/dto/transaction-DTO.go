@@ -42,13 +42,11 @@ type TransactionReport struct {
 }
 
 type TransactionReportPeriod struct {
-	created_at time.Time
 	Period     string `json:"period"`
 	Total      int64  `json:"total"`
 }
 
 type ReportSpendingCategoryPeriod struct {
-	created_at  time.Time
 	SubCategory string  `json:"sub_category"`
 	Period      string  `json:"period"`
 	Total       int64   `json:"total"`

@@ -180,8 +180,7 @@ func (rs *reportService) GetAnalyticPeriod(userId uint, period string) (map[stri
 	}
 
 	// get net income
-	var netIncome int64 = 0
-	netIncome = incomePeriod[0].Total + expensePeriod[0].Total
+	netIncome := incomePeriod[0].Total + expensePeriod[0].Total
 
 	// get expense and income current
 	var expenseCurrent, incomeCurrent int64
