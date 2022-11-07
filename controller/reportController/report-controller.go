@@ -13,26 +13,6 @@ type ReportController struct {
 	ReportService reportService.ReportService
 }
 
-func (ac *ReportController) GetReportByUser(c echo.Context) error {
-	// Get user id from jwt
-	userId, _ := helper.GetJwt(c)
-
-	// call service method to get report
-	dataReport, err := ac.ReportService.GetReportByUser(userId)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail get report",
-			"error":   err.Error(),
-		})
-	}
-
-	// Return response if success
-	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success get report",
-		"data": dataReport,
-	})
-}
-
 func (ac *ReportController) GetAnalyticPeriod(c echo.Context) error {
 	// get query parameters
 	paramPeriod := c.QueryParam("period")

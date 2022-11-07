@@ -1,14 +1,14 @@
 package reportService
 
 import (
+	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/repository/reportRepository"
-	"time"
+	"errors"
+	"strconv"
 )
 
 type ReportService interface {
-	GetReportByUser(userID uint) ([]dto.TransactionReport, error)
-	GetTransaction(userID uint, periodDate map[string]time.Time, categoryID uint) ([]dto.TransactionReport, float64, error)
 	GetAnalyticPeriod(userId uint, period string) (map[string]interface{}, error)
 }
 
@@ -16,104 +16,102 @@ type reportService struct {
 	reportRepo reportRepository.ReportRepository
 }
 
-// GetReportByUser implements ReportService
-func (*reportService) GetReportByUser(userID uint) ([]dto.TransactionReport, error) {
-	return nil, nil
-}
-
-// GetTransaction implements ReportService
-func (as *reportService) GetTransaction(userID uint, periodDate map[string]time.Time, categoryID uint) ([]dto.TransactionReport, float64, error) {
-	transaction, err := as.reportRepo.GetTransactionPeriod(userID, periodDate, categoryID)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	var total float64 = 0
-	for _, v := range transaction {
-		total += v.Amount
-	}
-
-	return transaction, total, nil
-}
 
 // GetAnalyticPeriod implements ReportService
 func (as *reportService) GetAnalyticPeriod(userId uint, period string) (map[string]interface{}, error) {
-	// make period time
-	now := time.Now()
-	currentYear, currentMonth, _ := now.Date()
-	currentLocation := now.Location()
-
-	var periodDateCurrent map[string]time.Time
-	var periodDatePrevious map[string]time.Time
 
 	// check if period is month or week
 	if period == "month" {
-		firstOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
-		lastOfMonth := firstOfMonth.AddDate(0, 1, -1)
-
-		firstOfMonthPrevious := time.Date(currentYear, currentMonth-1, 1, 0, 0, 0, 0, currentLocation)
-		lastOfMonthPrevious := firstOfMonth.AddDate(0, 0, -1)
-
-		periodDateCurrent = map[string]time.Time{
-			"firstOfDate": firstOfMonth,
-			"lastOfDate":  lastOfMonth,
-		}
-		periodDatePrevious = map[string]time.Time{
-			"firstOfDate": firstOfMonthPrevious,
-			"lastOfDate":  lastOfMonthPrevious,
-		}
+		period = "%M_%Y"
 	} else if period == "week" {
+		period = "%v_%x"
+	} else {
+		return nil, errors.New(constantError.ErrorInvalidPeriod)
 	}
 
-	// call repository to get report expense current
+	// call repository to get report expense period
 	var categoryExpense uint = 2
-	_, totalCurrentExpense, err := as.GetTransaction(userId, periodDateCurrent, categoryExpense)
+	expensePeriod, err := as.reportRepo.GetTransactionPeriod(userId, period, categoryExpense)
 	if err != nil {
 		return nil, err
 	}
-
-	// call repository to get report expense pervious
-	_, totalPreviousExpense, err := as.GetTransaction(userId, periodDatePrevious, categoryExpense)
-	if err != nil {
-		return nil, err
+	// check if expensePeriod is empty
+	if len(expensePeriod) == 0 {
+		expensePeriod = append(expensePeriod, dto.TransactionReportPeriod{
+			Period: "No Data",
+			Total:  0,
+		})
 	}
 
-	// call repository to get report income current
+	// call repository to get report income period
 	var categoryIncome uint = 3
-	_, totalCurrentIncome, err := as.GetTransaction(userId, periodDateCurrent, categoryIncome)
+	incomePeriod, err := as.reportRepo.GetTransactionPeriod(userId,period, categoryIncome)
 	if err != nil {
 		return nil, err
 	}
-
-	// call repository to get report income pervious
-	_, totalPreviousIncome, err := as.GetTransaction(userId, periodDatePrevious, categoryIncome)
-	if err != nil {
-		return nil, err
+	// check if incomePeriod is empty
+	if len(incomePeriod) == 0 {
+		incomePeriod = append(incomePeriod, dto.TransactionReportPeriod{
+			Period: "No Data",
+			Total:  0,
+		})
 	}
 
-	// Net income
-	netIncome := totalCurrentIncome + totalCurrentExpense
+	// get net income
+	var netIncome int64 = 0
+	netIncome = incomePeriod[0].Total + expensePeriod[0].Total
 
-	// comparison between current and previous
-	var comparisonExpense int64
-	if totalPreviousExpense == 0 {
-		comparisonExpense = 0
+	// get expense and income current
+	var expenseCurrent, incomeCurrent int64
+	expenseCurrent = expensePeriod[0].Total
+	incomeCurrent = incomePeriod[0].Total
+
+	// check if len expensePeriod is 1
+	if len(expensePeriod) == 1 {
+		expensePeriod = append(expensePeriod, dto.TransactionReportPeriod{
+			Period: "No Data",
+			Total:  0,
+		})
+	}
+
+	// check if len incomePeriod is 1
+	if len(incomePeriod) == 1 {
+		incomePeriod = append(incomePeriod, dto.TransactionReportPeriod{
+			Period: "No Data",
+			Total:  0,
+		})
+	}
+
+	// get expense and income last
+	var expenseLast, incomeLast int64
+	expenseLast = expensePeriod[1].Total
+	incomeLast = incomePeriod[1].Total
+
+	// compare expense and income current with expense and income last
+	var compareExpense, compareIncome int
+	// persentase expense current with expense last
+	if expenseLast == 0 {
+		compareExpense = 0
 	} else {
-		comparisonExpense = (int64(totalCurrentExpense) - int64(totalPreviousExpense)) * 100 / int64(totalPreviousExpense)
+		compareExpense = int(expenseCurrent-expenseLast) * 100 / int(expenseLast)
 	}
-	var comparisonIncome int64
-	if totalPreviousIncome == 0 {
-		comparisonIncome = 0
+	// persentase income current with income last
+	if incomeLast == 0 {
+		compareIncome = 0
 	} else {
-		comparisonIncome = (int64(totalCurrentIncome) - int64(totalPreviousIncome)) * 100 / int64(totalPreviousIncome)
+		compareIncome = int(incomeCurrent-incomeLast) * 100 / int(incomeLast)
 	}
+	// convert to string
+	var compareExpenseString, compareIncomeString string
+	compareExpenseString = strconv.Itoa(compareExpense)
+	compareIncomeString = strconv.Itoa(compareIncome)
 
 	data := map[string]interface{}{
-		"Expense":            totalCurrentExpense,
-		"Income":             totalCurrentIncome,
-		"Net income":         netIncome,
-		"Comparison expense": comparisonExpense,
-		"Comparison income":  comparisonIncome,
+		"expense_period": expensePeriod,
+		"income_period":  incomePeriod,
+		"net_income_" + incomePeriod[0].Period: netIncome,
+		"comparison_expense_" + incomePeriod[0].Period + "_and_" + incomePeriod[1].Period: compareExpenseString + "%",
+		"comparison_income_" + incomePeriod[0].Period + "_and_" + incomePeriod[1].Period:  compareIncomeString + "%",
 	}
 
 	return data, err

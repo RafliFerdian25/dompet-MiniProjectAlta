@@ -140,8 +140,7 @@ func New(db *gorm.DB) *echo.Echo {
 
 	// Report Routes
 	appReport := app.Group("/reports", middleware.JWTWithConfig(config))
-	appReport.GET("", reportController.GetReportByUser)
-	appReport.GET("/reports", reportController.GetAnalyticPeriod)
+	appReport.GET("/analytic", reportController.GetAnalyticPeriod)
 
 	return app
 }

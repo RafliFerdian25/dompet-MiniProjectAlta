@@ -30,3 +30,9 @@ type TransactionReport struct {
 	Amount        float64   `json:"amount"`
 	CreatedAt     time.Time `json:"created_at"`
 }
+
+type TransactionReportPeriod struct {
+	created_at time.Time
+	Period string
+	Total int64
+}

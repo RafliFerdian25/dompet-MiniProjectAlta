@@ -34,6 +34,8 @@ const (
 	ErrorNewAccountBalanceNotEnough = "new account balance is not enough"
 	// ErrorEmailOrPasswordNotMatch is error message when email or password not match
 	ErrorEmailOrPasswordNotMatch = "email or password not match"
+	// ErrorInvalidPeriod is error message when period is not month or week
+	ErrorInvalidPeriod = "invalid period"
 )
 
 var ErrorCode = map[string]int{
@@ -52,4 +54,5 @@ var ErrorCode = map[string]int{
 	"old account balance is not enough": 400,
 	"new account balance is not enough": 400,
 	"email or password not match": 400,
+	"invalid period": 400,
 }
