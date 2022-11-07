@@ -64,7 +64,7 @@ func MigrateDB(db *gorm.DB) error {
 		}
 	}
 	// seeder SubCategory
-	subCategory := []string{"Debt collection", "Repayment", "Loan", "Debt collection", "Food", "Transportation", "Entertainment","Shopping","Healt & Fitness","Salary","Gift","Selling","Award","Interest money", "Bonus"}
+	subCategory := []string{"Debt", "Repayment", "Loan", "Debt collection", "Food", "Transportation", "Entertainment","Shopping","Healt & Fitness","Salary","Gift","Selling","Award","Interest money", "Bonus"}
 	if err == nil && db.Migrator().HasTable(&model.SubCategory{}) {
 		if err := db.First(&model.SubCategory{}).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 			for i, name := range subCategory {

@@ -5,6 +5,6 @@ import (
 )
 
 type ReportRepository interface {
-	// GetTransactionReport(userID uint, categoryID uint) ([]dto.TransactionReport, error)
-	GetTransactionPeriod(userID uint, period string, categoryID uint) ([]dto.TransactionReportPeriod, error)
+	GetReportbyCategory(userId uint, period map[string]interface{}, categoryID uint) ([]dto.ReportSpendingCategoryPeriod, error)
+	GetTransactionPeriod(userID uint, period string, categoryID uint, limit int) ([]dto.TransactionReportPeriod, error)
 }

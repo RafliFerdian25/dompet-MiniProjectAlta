@@ -33,6 +33,14 @@ type TransactionReport struct {
 
 type TransactionReportPeriod struct {
 	created_at time.Time
-	Period string
-	Total int64
+	Period     string
+	Total      int64
+}
+
+type ReportSpendingCategoryPeriod struct {
+	created_at  time.Time
+	SubCategory string
+	Period      string
+	Total       int64
+	Persentage  float64
 }
