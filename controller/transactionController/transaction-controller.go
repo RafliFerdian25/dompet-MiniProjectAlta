@@ -7,6 +7,7 @@ import (
 	"dompet-miniprojectalta/service/transactionService"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -15,7 +16,49 @@ type TransactionController struct {
 	TransactionService transactionService.TransactionService
 }
 
-func (tc *TransactionController) DeleteTransaction(c echo.Context) error  {
+func (tc *TransactionController) GetTransaction(c echo.Context) error {
+	// Get month from url
+	paramMonth := c.QueryParam("month")
+	var month int
+	if paramMonth == "" {
+		month = int(time.Now().Month())
+	} else {
+		var err error
+		month, err = strconv.Atoi(paramMonth)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, echo.Map{
+				"message": "fail get month",
+				"error":   err.Error(),
+			})
+		}
+	}
+
+	// Get user id from jwt
+	userId, _ := helper.GetJwt(c)
+
+	// call service get transaction
+	data, err := tc.TransactionService.GetTransaction(month, userId)
+	if err != nil {
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get transaction",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get transaction",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success get transaction",
+		"transactions": data,
+	})
+}
+
+func (tc *TransactionController) DeleteTransaction(c echo.Context) error {
 	// Get id from url
 	paramId := c.Param("id")
 	id, err := strconv.Atoi(paramId)
@@ -46,7 +89,7 @@ func (tc *TransactionController) DeleteTransaction(c echo.Context) error  {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success delete transaction",
 	})
 }
 

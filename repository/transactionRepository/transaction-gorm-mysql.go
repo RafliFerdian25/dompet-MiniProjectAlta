@@ -13,6 +13,17 @@ type transactionRepository struct {
 	db *gorm.DB
 }
 
+// GetTransaction implements TransactionRepository
+func (tr*transactionRepository) GetTransaction(month int, userId, categoryID uint) ([]dto.GetTransactionDTO, error) {
+	var transaction []dto.GetTransactionDTO
+	err := tr.db.Model(&model.Transaction{}).Select("transactions.id, transactions.user_id, transactions.sub_category_id, sub_categories.category_id, transactions.account_id, transactions.amount, transactions.created_at").Joins("JOIN sub_categories On transactions.sub_category_id = sub_categories.id").Where("transactions.user_id = ? AND MONTH(transactions.created_at) = ? AND sub_categories.category_id = ?", userId, month, categoryID).Scan(&transaction)
+	if err.Error != nil {
+		return []dto.GetTransactionDTO{}, err.Error
+	}
+
+	return transaction, nil
+}
+
 // DeleteTransaction implements TransactionRepository
 func (tr *transactionRepository) DeleteTransaction(id uint, account dto.AccountDTO) error {
 	err := tr.db.Transaction(func(tx *gorm.DB) error {

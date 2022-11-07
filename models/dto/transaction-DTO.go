@@ -21,6 +21,16 @@ type TransactionJoin struct {
 	Amount        float64 `json:"amount"`
 }
 
+type GetTransactionDTO struct {
+	ID            uint    `json:"id"`
+	UserID        uint    `json:"user_id"`
+	SubCategoryID uint    `json:"sub_category_id"`
+	CategoryID    uint    `json:"category_id"`
+	AccountID     uint    `json:"account_id"`
+	Amount        float64 `json:"amount"`
+	CreatedAt	 time.Time `json:"created_at"`
+}
+
 type TransactionReport struct {
 	ID            uint      `json:"id"`
 	UserID        uint      `json:"user_id"`
@@ -33,14 +43,14 @@ type TransactionReport struct {
 
 type TransactionReportPeriod struct {
 	created_at time.Time
-	Period     string
-	Total      int64
+	Period     string `json:"period"`
+	Total      int64  `json:"total"`
 }
 
 type ReportSpendingCategoryPeriod struct {
 	created_at  time.Time
-	SubCategory string
-	Period      string
-	Total       int64
-	Persentage  float64
+	SubCategory string  `json:"sub_category"`
+	Period      string  `json:"period"`
+	Total       int64   `json:"total"`
+	Persentage  float64 `json:"persentage"`
 }

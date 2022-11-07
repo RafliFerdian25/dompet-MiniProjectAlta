@@ -127,6 +127,7 @@ func New(db *gorm.DB) *echo.Echo {
 	appTransaction.POST("",transactionController.CreateTransaction)
 	appTransaction.PUT("/:id", transactionController.UpdateTransaction)
 	appTransaction.DELETE("/:id", transactionController.DeleteTransaction)
+	appTransaction.GET("", transactionController.GetTransaction)
 
 	// Debt Routes
 	appDebt := app.Group("/debts", middleware.JWTWithConfig(config))

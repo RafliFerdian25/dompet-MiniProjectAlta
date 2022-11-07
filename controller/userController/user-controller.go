@@ -87,7 +87,7 @@ func (u *UserController) LoginUser(c echo.Context) error {
 	}
 
 	return c.JSON(200, echo.Map{
-		"message": "success",
+		"message": "success login",
 		"token":   token,
 	})
 }

@@ -1,15 +1,18 @@
 package transactionService
 
 import (
+	"dompet-miniprojectalta/constant/constantCategory"
 	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/repository/accountRepository"
 	"dompet-miniprojectalta/repository/subCategoryRepository"
 	"dompet-miniprojectalta/repository/transactionRepository"
 	"errors"
+	"time"
 )
 
 type TransactionService interface {
+	GetTransaction(month int, userId uint) (map[string]interface{}, error)
 	DeleteTransaction(id uint, userID uint) error
 	UpdateTransaction(transaction dto.TransactionDTO, userId uint) error
 	CreateTransaction(transaction dto.TransactionDTO) error
@@ -19,6 +22,25 @@ type transactionService struct {
 	transactionRepo transactionRepository.TransactionRepository
 	accountRepo     accountRepository.AccountRepository
 	subCategoryRepo subCategoryRepository.SubCategoryRepository
+}
+
+// GetTransaction implements TransactionService
+func (ts *transactionService) GetTransaction(month int, userId uint) (map[string]interface{}, error) {
+	// call repository to get transaction
+	expenseTransactions, err := ts.transactionRepo.GetTransaction(month, userId, constantCategory.ExpenseCategory)
+	if err != nil {
+		return map[string]interface{}{}, err
+	}
+	incomeTransactions, err := ts.transactionRepo.GetTransaction(month, userId, constantCategory.IncomeCategory)
+	if err != nil {
+		return map[string]interface{}{}, err
+	}
+	data := map[string]interface{}{
+		"expense": expenseTransactions,
+		"income": incomeTransactions,
+		"month_transaction": time.Month(month).String(),
+	}
+	return data, nil
 }
 
 // DeleteTransaction implements TransactionService
@@ -100,7 +122,7 @@ func (ts *transactionService) UpdateTransaction(newTransaction dto.TransactionDT
 		// update balance new account
 		newAccount.Balance -= oldTransaction.Amount
 	}
-	
+
 	// update balance old account
 	oldAccount.Balance -= oldTransaction.Amount
 
@@ -118,7 +140,7 @@ func (ts *transactionService) UpdateTransaction(newTransaction dto.TransactionDT
 		}
 		newTransaction.Amount *= -1
 	}
-	
+
 	// update balance new account
 	newAccount.Balance += newTransaction.Amount
 
@@ -175,7 +197,7 @@ func NewTransactionService(transactionRepository transactionRepository.Transacti
 	subCategoryRepo subCategoryRepository.SubCategoryRepository) TransactionService {
 	return &transactionService{
 		transactionRepo: transactionRepository,
-		accountRepo: accountRepo,
+		accountRepo:     accountRepo,
 		subCategoryRepo: subCategoryRepo,
 	}
 }
