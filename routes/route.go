@@ -111,7 +111,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// SubCategory Routes
 	appSubCategory := app.Group("/subcategories", middleware.JWTWithConfig(config))
 	appSubCategory.POST("", subcategoryController.CreateSubCategory)
-	appSubCategory.GET("/userid", subcategoryController.GetSubCategoryByUser)
+	appSubCategory.GET("", subcategoryController.GetSubCategoryByUser)
 	appSubCategory.DELETE("/:id", subcategoryController.DeleteSubCategory)
 	appSubCategory.PUT("/:id", subcategoryController.UpdateSubCategory)
 
@@ -120,7 +120,7 @@ func New(db *gorm.DB) *echo.Echo {
 	appAccount.POST("", accountController.CreateAccount)
 	appAccount.PUT("/:id", accountController.UpdateAccount)
 	appAccount.DELETE("/:id", accountController.DeleteAccount)
-	appAccount.GET("/user", accountController.GetAccountByUser)
+	appAccount.GET("", accountController.GetAccountByUser)
 
 	// Transaction Routes
 	appTransaction := app.Group("/transactions", middleware.JWTWithConfig(config))

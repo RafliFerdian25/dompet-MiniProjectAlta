@@ -54,7 +54,7 @@ func (dc *DebtController) GetDebt(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success get debt",
 		"data":    data,
 	})
 }
@@ -91,7 +91,7 @@ func (dc *DebtController) DeleteDebt(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success delete debt",
 	})
 
 }
@@ -149,6 +149,6 @@ func (dc *DebtController) CreateDebt(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success create debt",
 	})
 }

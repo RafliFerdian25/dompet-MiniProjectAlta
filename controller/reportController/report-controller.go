@@ -76,6 +76,17 @@ func (ac *ReportController) GetReportbyCategory(c echo.Context) error {
 				"error":   "number_period must be integer",
 			})
 		}
+		if paramPeriod == "month" && (numberPeriod < 1 || numberPeriod > 12) {
+			return c.JSON(http.StatusBadRequest, echo.Map{
+				"message": "invalid number_period",
+				"error":   "number_period must be between 1 and 12",
+			})
+		} else if paramPeriod == "week" && (numberPeriod < 1 || numberPeriod > 53) {
+			return c.JSON(http.StatusBadRequest, echo.Map{
+				"message": "invalid number_period",
+				"error":   "number_period must be between 1 and 53",
+			})
+		}
 	}
 
 	// Get user id from jwt

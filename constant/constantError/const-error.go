@@ -15,7 +15,7 @@ const (
 	// ErrorDebtNotFound is error message when debt not found
 	ErrorDebtNotFound = "debt not found"
 	// ErrorSubCategoryNotFound is error message when subcategory not found
-	ErrorSubCategoryNotFound = "subcategory not found"
+	ErrorSubCategoryNotFound = "sub category not found"
 	// ErrorAccountNotEnoughBalance is error message when account not enough balance
 	ErrorAccountNotEnoughBalance = "account not enough balance"
 	// ErrorNotAuthorized is error message when user not authorized
@@ -36,6 +36,8 @@ const (
 	ErrorEmailOrPasswordNotMatch = "email or password not match"
 	// ErrorInvalidPeriod is error message when period is not month or week
 	ErrorInvalidPeriod = "invalid period"
+	// ErrorCannotUseCategory is error message when user cannot use category
+	ErrorCannotUseCategory = "you cannot use this category"
 )
 
 var ErrorCode = map[string]int{
@@ -55,4 +57,5 @@ var ErrorCode = map[string]int{
 	"new account balance is not enough": 400,
 	"email or password not match": 400,
 	"invalid period": 400,
+	"you cannot use this category": 400,
 }

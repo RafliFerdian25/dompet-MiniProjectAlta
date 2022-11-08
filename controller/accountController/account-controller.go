@@ -47,7 +47,7 @@ func (ac *AccountController) DeleteAccount(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success delete account",
 	})
 }
 
@@ -73,7 +73,7 @@ func (ac *AccountController) GetAccountByUser(c echo.Context) error {
 
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message":     "success",
+		"message":     "success get account by user",
 		"Accounts": userAccounts,
 	})
 }
@@ -124,7 +124,7 @@ func (ac *AccountController) UpdateAccount(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success update account",
 	})
 }
 
@@ -169,6 +169,6 @@ func (ac *AccountController) CreateAccount(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success create account",
 	})
 }
