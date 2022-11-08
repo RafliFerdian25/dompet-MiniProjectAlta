@@ -176,7 +176,7 @@ func (ts *transactionService) CreateTransaction(transaction dto.TransactionDTO) 
 
 	// check if category id is 1 (debt & loan) or 2 (expense)
 	if subCategory.CategoryID == 1 {
-		return errors.New(constantError.ErrorNotAuthorized)
+		return errors.New(constantError.ErrorCannotUseCategory)
 	} else if subCategory.CategoryID == 2 {
 		// check if balance is enough
 		if transaction.Amount > account.Balance {

@@ -28,6 +28,7 @@ type GetTransactionDTO struct {
 	CategoryID    uint    `json:"category_id"`
 	AccountID     uint    `json:"account_id"`
 	Amount        float64 `json:"amount"`
+	Note          string  `json:"note"`
 	CreatedAt	 time.Time `json:"created_at"`
 }
 

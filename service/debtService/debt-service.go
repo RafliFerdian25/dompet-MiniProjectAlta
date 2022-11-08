@@ -131,24 +131,31 @@ func (ds *debtService) CreateDebt(debtTransaction dto.DebtTransactionDTO) error 
 				return errors.New(constantError.ErrorCannotChangeSubCategory)
 			}
 		}
+
 		// check if user id in the debt is the same as the user id in the transaction
 		if debt.Transactions[0].UserID != debtTransaction.UserID {
 			return errors.New(constantError.ErrorNotAuthorized)
 		}
-		// check if the sub category is make total increase or remaining decrease
-		if debtTransaction.SubCategoryID == 1 || debtTransaction.SubCategoryID == 4 {
+
+		if debtTransaction.SubCategoryID == 1 || debtTransaction.SubCategoryID == 3 {
 			debt.Total += debtTransaction.Amount
-			debt.Remaining += debtTransaction.Amount
-		} else if debtTransaction.SubCategoryID == 2 || debtTransaction.SubCategoryID == 3 {
+			debt.DebtStatus = "unpaid"
+			// debt.Remaining += debtTransaction.Amount
+		} else if debtTransaction.SubCategoryID == 2 {
 			// check if amount is more than remaining
 			if (debtTransaction.Amount * -1) > debt.Remaining {
 				return errors.New(fmt.Sprint("Input amount is more than remaining debt. Unpaid amount is ", debt.Remaining))
 			}
-			debt.Remaining += debtTransaction.Amount
-			// check if remaining is 0
-			if debt.Remaining == 0 {
-				debt.DebtStatus = "paid"
+		} else if debtTransaction.SubCategoryID == 4 {
+			// check if amount is more than remaining
+			if debtTransaction.Amount > (debt.Remaining * -1) {
+				return errors.New(fmt.Sprint("Input amount is more than remaining loan. Unpaid amount is ", (debt.Remaining * -1)))
 			}
+		}
+		debt.Remaining += debtTransaction.Amount
+		// check if remaining is 0
+		if debt.Remaining == 0 {
+			debt.DebtStatus = "paid"
 		}
 	}
 	// set account balance

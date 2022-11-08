@@ -7,12 +7,57 @@ import (
 	"dompet-miniprojectalta/service/transactionAccService"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
 
 type TransactionAccController struct {
 	TransAccService transactionAccService.TransactionAccService
+}
+
+// GetTransactionAccount 
+func (tac *TransactionAccController) GetTransactionAccount(c echo.Context) error {
+	// Get month from url
+	paramMonth := c.QueryParam("month")
+	var month int
+	if paramMonth == "" {
+		month = int(time.Now().Month())
+	} else {
+		var err error
+		month, err = strconv.Atoi(paramMonth)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, echo.Map{
+				"message": "fail get month",
+				"error":   err.Error(),
+			})
+		}
+	}
+
+	// Get user id from jwt
+	userId, _ := helper.GetJwt(c)
+
+	// Call service to get transaction
+	transAcc, err := tac.TransAccService.GetTransactionAccount(userId, month)
+	if err != nil {
+		// Check if there is an error client
+		if val, ok := constantError.ErrorCode[err.Error()]; ok {
+			return c.JSON(val, echo.Map{
+				"message": "fail get transaction account",
+				"error":   err.Error(),
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, echo.Map{
+			"message": "fail get transaction account",
+			"error":   err.Error(),
+		})
+	}
+
+	// Return response if success
+	return c.JSON(http.StatusOK, echo.Map{
+		"message": "success get transaction account",
+		"transaction_account_month_"+ strconv.Itoa(month):    transAcc,
+	})
 }
 
 // DeleteTransactionAccount
@@ -48,7 +93,7 @@ func (tac *TransactionAccController) DeleteTransactionAccount(c echo.Context) er
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success delete transaction account",
 	})
 }
 
@@ -96,6 +141,6 @@ func (tac *TransactionAccController) CreateTransactionAccount(c echo.Context) er
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success create transaction account",
 	})
 }

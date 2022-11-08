@@ -56,7 +56,7 @@ func (sc *SubCategoryController) CreateSubCategory(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success create sub category",
 	})
 }
 
@@ -82,8 +82,8 @@ func (sc *SubCategoryController) GetSubCategoryByUser(c echo.Context) error {
 
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message":     "success",
-		"subCategories": subCategories,
+		"message":     "success get sub category by user",
+		"sub_categories": subCategories,
 	})
 }
 
@@ -119,7 +119,7 @@ func (sc *SubCategoryController) DeleteSubCategory(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success delete sub category",
 	})
 }
 
@@ -169,6 +169,6 @@ func (sc *SubCategoryController) UpdateSubCategory(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success update sub category",
 	})
 }

@@ -139,7 +139,7 @@ func (tc *TransactionController) UpdateTransaction(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success update transaction",
 	})
 }
 
@@ -186,6 +186,6 @@ func (tc *TransactionController) CreateTransaction(c echo.Context) error {
 
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message": "success",
+		"message": "success create transaction",
 	})
 }
