@@ -26,7 +26,7 @@ func (cc *CategoryController) GetCategoryByID(c echo.Context) error  {
 	}
 
 	// get category by id from service
-	categoriesID, err := cc.CategoryService.GetCategoryByCategoryID(uint(categoryID))
+	categoriesID, err := cc.CategoryService.GetCategoryByID(uint(categoryID))
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{

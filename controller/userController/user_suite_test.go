@@ -5,7 +5,7 @@ import (
 	"dompet-miniprojectalta/helper"
 	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
-	"dompet-miniprojectalta/service/userService/userMock"
+	userMockService "dompet-miniprojectalta/service/userService/userMock"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -21,11 +21,11 @@ import (
 type suiteUsers struct {
 	suite.Suite
 	userController *UserController
-	mock           *userMock.UserMock
+	mock           *userMockService.UserMock
 }
 
 func (s *suiteUsers) SetupSuite() {
-	mock := &userMock.UserMock{}
+	mock := &userMockService.UserMock{}
 	s.mock = mock
 	s.userController = &UserController{
 		UserService: s.mock,
