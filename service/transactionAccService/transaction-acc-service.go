@@ -9,6 +9,7 @@ import (
 )
 
 type TransactionAccService interface {
+	GetTransactionAccount(userId uint, month int) ([]dto.GetTransactionAccountDTO, error)
 	DeleteTransactionAccount(id, userID uint) error
 	CreateTransactionAccount(transAcc dto.TransactionAccount) error
 }
@@ -16,6 +17,16 @@ type TransactionAccService interface {
 type transactionAccService struct {
 	transAccRepo transactionAccRepository.TransactionAccRepository
 	accountRepo  accountRepository.AccountRepository
+}
+
+// GetTransactionAccount implements TransactionAccService
+func (tas *transactionAccService) GetTransactionAccount(userId uint, month int) ([]dto.GetTransactionAccountDTO, error) {
+	// call repository to get transaction
+	transactionAccounts, err := tas.transAccRepo.GetTransactionAccount(userId, month)
+	if err != nil {
+		return []dto.GetTransactionAccountDTO{}, err
+	}
+	return transactionAccounts, nil
 }
 
 // DeleteTransactionAccount implements TransactionAccService
@@ -39,7 +50,6 @@ func (tas *transactionAccService) DeleteTransactionAccount(transAccID uint, user
 	if errTo != nil {
 		return errTo
 	}
-	
 
 	// check if balance account to is more than transaction amount
 	if accountTo.Balance < transAcc.Amount {

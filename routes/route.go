@@ -139,6 +139,7 @@ func New(db *gorm.DB) *echo.Echo {
 	appTransAcc := app.Group("/transaction-accounts", middleware.JWTWithConfig(config)) 
 	appTransAcc.POST("", transAccController.CreateTransactionAccount)
 	appTransAcc.DELETE("/:id", transAccController.DeleteTransactionAccount)
+	appTransAcc.GET("", transAccController.GetTransactionAccount)
 
 	// Report Routes
 	appReport := app.Group("/reports", middleware.JWTWithConfig(config))

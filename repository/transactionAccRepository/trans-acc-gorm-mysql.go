@@ -11,6 +11,17 @@ type transactionAccRepository struct {
 	db *gorm.DB
 }
 
+// GetTransactionAccount implements TransactionAccRepository
+func (tar *transactionAccRepository) GetTransactionAccount(userId uint, month int) ([]dto.GetTransactionAccountDTO, error) {
+	// get transaction account
+	var transAcc []dto.GetTransactionAccountDTO
+	err := tar.db.Model(&model.TransactionAccount{}).Where("user_id = ?", userId).Where("MONTH(created_at) = ?", month).Find(&transAcc)
+	if err.Error != nil {
+		return []dto.GetTransactionAccountDTO{}, err.Error
+	}
+	return transAcc, nil
+}
+
 // DeleteTransactionAcc implements TransactionAccRepository
 func (tar *transactionAccRepository) DeleteTransactionAccount(id uint, accountFrom, accountTo dto.AccountDTO) error {
 	err := tar.db.Transaction(func(tx *gorm.DB) error {
@@ -31,7 +42,7 @@ func (tar *transactionAccRepository) DeleteTransactionAccount(id uint, accountFr
 
 		return nil
 	})
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return nil

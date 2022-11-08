@@ -1,5 +1,7 @@
 package dto
 
+import "time"
+
 type TransactionAccount struct {
 	ID            uint    `json:"id"`
 	AccountFromID uint    `json:"account_from_id" validate:"required,numeric"`
@@ -8,4 +10,15 @@ type TransactionAccount struct {
 	Amount        float64 `json:"amount" validate:"required,numeric,gt=0"`
 	Note          string  `json:"note"`
 	AdminFee      float64 `json:"admin_fee"`
+}
+
+type GetTransactionAccountDTO struct {
+	ID            uint      `json:"id"`
+	AccountFromID uint      `json:"account_from_id" validate:"required,numeric"`
+	AccountToID   uint      `json:"account_to_id" validate:"required,numeric"`
+	UserID        uint      `json:"user_id"`
+	Amount        float64   `json:"amount" validate:"required,numeric,gt=0"`
+	Note          string    `json:"note"`
+	AdminFee      float64   `json:"admin_fee"`
+	CreatedAt     time.Time `json:"created_at"`
 }
