@@ -10,10 +10,10 @@ type DebtMock struct {
 	mock.Mock
 }
 
-func (d *DebtMock) GetDebt(userId uint, debtStatus string) (map[string]interface{}, error) {
+func (d *DebtMock) GetDebt(userId uint, debtStatus string) (map[string][]dto.GetDebtTransactionResponse, error) {
 	args := d.Called(userId, debtStatus)
 
-	return args.Get(0).(map[string]interface{}), args.Error(1)
+	return args.Get(0).(map[string][]dto.GetDebtTransactionResponse), args.Error(1)
 }
 
 func (d *DebtMock) DeleteDebt(id, userId uint) error {

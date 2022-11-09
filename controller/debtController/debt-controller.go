@@ -21,13 +21,13 @@ func (dc *DebtController) GetDebt(c echo.Context) error {
 	debtStatus := c.QueryParam("debt_status") 
 	if debtStatus == "" {
 		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "fail get debt",
+			"message": "fail get debt status",
 			"error":   "debt status is required",
 		})
 	} else {
 		if debtStatus != "paid" && debtStatus != "unpaid" {
 			return c.JSON(http.StatusBadRequest, echo.Map{
-				"message": "fail get debt",
+				"message": "fail get debt status",
 				"error":   "debt status is invalid",
 			})
 			
@@ -79,12 +79,12 @@ func (dc *DebtController) DeleteDebt(c echo.Context) error {
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
-				"message": "fail delete transaction",
+				"message": "fail delete debt",
 				"error":   err.Error(),
 			})
 		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail delete transaction",
+			"message": "fail delete debt",
 			"error":   err.Error(),
 		})
 	}
@@ -119,7 +119,7 @@ func (dc *DebtController) CreateDebt(c echo.Context) error {
 	if debtTrans.SubCategoryID == 2 || debtTrans.SubCategoryID == 4 {
 		if debtTrans.DebtID == 0 {
 			return c.JSON(http.StatusBadRequest, echo.Map{
-				"message": "fail create transaction",
+				"message": "fail create debt",
 				"error":   "debt id is required",
 			})
 		}
@@ -132,17 +132,17 @@ func (dc *DebtController) CreateDebt(c echo.Context) error {
 	// Call service to create account
 	err = dc.DebtService.CreateDebt(debtTrans)
 
-	// check if there is an error create transaction
+	// check if there is an error create debt
 	if err != nil {
 		// Check if there is an error client
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
-				"message": "fail create transaction",
+				"message": "fail create debt",
 				"error":   err.Error(),
 			})
 		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
-			"message": "fail create transaction",
+			"message": "fail create debt",
 			"error":   err.Error(),
 		})
 	}
