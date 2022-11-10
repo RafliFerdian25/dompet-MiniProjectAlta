@@ -20,7 +20,8 @@ func (ac *ReportController) GetCashflow(c echo.Context) error {
 	paramPeriod := c.QueryParam("period")
 	if paramPeriod != "month" && paramPeriod != "week" {
 		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "invalid period",
+			"message": "fail get period",
+			"error":   "invalid period, must be month or week",
 		})
 	}
 
@@ -55,7 +56,8 @@ func (ac *ReportController) GetReportbyCategory(c echo.Context) error {
 	paramPeriod := c.QueryParam("period")
 	if paramPeriod != "month" && paramPeriod != "week" {
 		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "invalid period",
+			"message": "fail get period",
+			"error":   "invalid period, must be month or week",
 		})
 	}
 
@@ -72,18 +74,18 @@ func (ac *ReportController) GetReportbyCategory(c echo.Context) error {
 		numberPeriod, err = strconv.Atoi(paramNumberPeriod)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, echo.Map{
-				"message": "invalid number_period",
+				"message": "invalid number period",
 				"error":   "number_period must be integer",
 			})
 		}
 		if paramPeriod == "month" && (numberPeriod < 1 || numberPeriod > 12) {
 			return c.JSON(http.StatusBadRequest, echo.Map{
-				"message": "invalid number_period",
+				"message": "invalid number period",
 				"error":   "number_period must be between 1 and 12",
 			})
 		} else if paramPeriod == "week" && (numberPeriod < 1 || numberPeriod > 53) {
 			return c.JSON(http.StatusBadRequest, echo.Map{
-				"message": "invalid number_period",
+				"message": "invalid number period",
 				"error":   "number_period must be between 1 and 53",
 			})
 		}
@@ -119,7 +121,8 @@ func (ac *ReportController) GetAnalyticPeriod(c echo.Context) error {
 	paramPeriod := c.QueryParam("period")
 	if paramPeriod != "month" && paramPeriod != "week" {
 		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "invalid period",
+			"message": "fail get period",
+			"error":   "invalid period, must be month or week",
 		})
 	}
 

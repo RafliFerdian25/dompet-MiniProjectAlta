@@ -6,6 +6,7 @@ import (
 	"dompet-miniprojectalta/repository/reportRepository"
 	"errors"
 	"strconv"
+	"strings"
 
 	"github.com/shopspring/decimal"
 )
@@ -230,9 +231,9 @@ func (rs *reportService) GetAnalyticPeriod(userId uint, period string) (map[stri
 	data := map[string]interface{}{
 		"expense_period":                       expensePeriod,
 		"income_period":                        incomePeriod,
-		"net_income_" + incomePeriod[0].Period: netIncome,
-		"comparison_expense_" + expensePeriod[0].Period + "_and_" + expensePeriod[1].Period: compareExpenseString + "%",
-		"comparison_income_" + incomePeriod[0].Period + "_and_" + incomePeriod[1].Period:    compareIncomeString + "%",
+		"net_income_" + strings.ToLower(incomePeriod[0].Period): netIncome,
+		"comparison_expense_" + strings.ToLower(expensePeriod[0].Period) + "_and_" + strings.ToLower(expensePeriod[1].Period): compareExpenseString + "%",
+		"comparison_income_" + strings.ToLower(incomePeriod[0].Period) + "_and_" + strings.ToLower(incomePeriod[1].Period):    compareIncomeString + "%",
 	}
 
 	return data, nil

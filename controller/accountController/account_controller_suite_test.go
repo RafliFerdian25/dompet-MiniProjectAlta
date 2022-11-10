@@ -356,7 +356,6 @@ func (s *suiteAccount) TestCreateAccount() {
 		Body               dto.AccountDTO
 		MockReturnError    error
 		MockParamBody      dto.AccountDTO
-		HasReturnBody      bool
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -374,7 +373,6 @@ func (s *suiteAccount) TestCreateAccount() {
 				Name:    "BCA",
 				Balance: 100000,
 			},
-			true,
 			http.StatusOK,
 			"success create account",
 		},
@@ -390,7 +388,6 @@ func (s *suiteAccount) TestCreateAccount() {
 				UserID:  1,
 				Balance: 100000,
 			},
-			true,
 			http.StatusBadRequest,
 			"There is an empty field",
 		},
@@ -408,7 +405,6 @@ func (s *suiteAccount) TestCreateAccount() {
 				Name:    "BCA",
 				Balance: 100000,
 			},
-			true,
 			http.StatusUnauthorized,
 			"fail create account",
 		},
@@ -426,7 +422,6 @@ func (s *suiteAccount) TestCreateAccount() {
 				Name:    "BCA",
 				Balance: 100000,
 			},
-			true,
 			http.StatusInternalServerError,
 			"fail create account",
 		},
@@ -455,13 +450,11 @@ func (s *suiteAccount) TestCreateAccount() {
 			s.NoError(err)
 			s.Equal(v.ExpectedStatusCode, w.Code)
 
-			if v.HasReturnBody {
-				var resp map[string]interface{}
-				err := json.NewDecoder(w.Result().Body).Decode(&resp)
-				s.NoError(err)
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
 
-				s.Equal(v.ExpectedMesaage, resp["message"])
-			}
+			s.Equal(v.ExpectedMesaage, resp["message"])
 		})
 		// remove mock
 		mockCall.Unset()
