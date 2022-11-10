@@ -37,10 +37,10 @@ func (s *suiteCategory) TestGetCategoryByID() {
 		Name               string
 		Method             string
 		ParamID             string
-		MockReturnBody     []model.Category
+		MockReturnBody     model.Category
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       []model.Category
+		ExpectedBody       model.Category
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -48,31 +48,21 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"success get category by id",
 			"GET",
 			"1",
-			[]model.Category{
-				{
+			model.Category{
+				
 					Model:   gorm.Model{ID: 1},
 					Name: "test",
 					SubCategories: []model.SubCategory{},
-				},
-				{
-					Model:   gorm.Model{ID: 2},
-					Name: "test2",
-					SubCategories: []model.SubCategory{},
-				},
+				
 			},
 			nil,
 			true,
-			[]model.Category{
-				{
+			model.Category{
+				
 					Model:   gorm.Model{ID: 1},
 					Name: "test",
 					SubCategories: []model.SubCategory{},
-				},
-				{
-					Model:   gorm.Model{ID: 2},
-					Name: "test2",
-					SubCategories: []model.SubCategory{},
-				},
+				
 			},
 			http.StatusOK,
 			"success get category by id",
@@ -81,10 +71,10 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"fail get id",
 			"GET",
 			"w",
-			[]model.Category{},
+			model.Category{},
 			nil,
 			false,
-			[]model.Category{},
+			model.Category{},
 			http.StatusBadRequest,
 			"fail get id",
 		},
@@ -92,20 +82,15 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"fail get category by id",
 			"GET",
 			"1",
-			[]model.Category{},
+			model.Category{},
 			errors.New(constantError.ErrorNotAuthorized),
 			false,
-			[]model.Category{
-				{
+			model.Category{
+				
 					Model:   gorm.Model{ID: 1},
 					Name: "test",
 					SubCategories: []model.SubCategory{},
-				},
-				{
-					Model:   gorm.Model{ID: 2},
-					Name: "test2",
-					SubCategories: []model.SubCategory{},
-				},
+				
 			},
 			http.StatusUnauthorized,
 			"fail get category by id",
@@ -114,20 +99,15 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"fail get category by id",
 			"GET",
 			"1",
-			[]model.Category{},
+			model.Category{},
 			errors.New("error"),
 			false,
-			[]model.Category{
-				{
+			model.Category{
+				
 					Model:   gorm.Model{ID: 1},
 					Name: "test",
 					SubCategories: []model.SubCategory{},
-				},
-				{
-					Model:   gorm.Model{ID: 2},
-					Name: "test2",
-					SubCategories: []model.SubCategory{},
-				},
+				
 			},
 			http.StatusInternalServerError,
 			"fail get category by id",
@@ -161,8 +141,8 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			s.Equal(v.ExpectedMesaage, resp["message"])
 
 			if v.HasReturnBody {
-				s.Equal(v.ExpectedBody[0].Name, resp["categories"].([]interface{})[0].(map[string]interface{})["name"])
-				s.Equal(v.ExpectedBody[1].Name, resp["categories"].([]interface{})[1].(map[string]interface{})["name"])
+				s.Equal(v.ExpectedBody.Name, resp["categories"].(map[string]interface{})["name"])
+				s.Equal(v.ExpectedBody.Name, resp["categories"].(map[string]interface{})["name"])
 			}
 		})
 		// remove mock

@@ -37,7 +37,7 @@ func (tc *TransactionController) GetTransaction(c echo.Context) error {
 	userId, _ := helper.GetJwt(c)
 
 	// call service get transaction
-	data, err := tc.TransactionService.GetTransaction(month, userId)
+	data, err := tc.TransactionService.GetTransaction(userId, month)
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{

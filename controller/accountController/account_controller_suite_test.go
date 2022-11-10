@@ -249,6 +249,27 @@ func (s *suiteAccount) TestUpdateAccount() {
 			"success update account",
 		},
 		{
+			"fail bind data",
+			"PUT",
+			1,
+			dto.AccountDTO{
+				UserID:  1,
+				Name:    "BCA",
+				Balance: 100000,
+			},
+			"1",
+			nil,
+			dto.AccountDTO{
+				ID:      1,
+				UserID:  1,
+				Name:    "BCA",
+				Balance: 100000,
+			},
+			true,
+			http.StatusInternalServerError,
+			"fail bind data",
+		},
+		{
 			"fail get id",
 			"PUT",
 			1,
@@ -312,13 +333,15 @@ func (s *suiteAccount) TestUpdateAccount() {
 			"fail update account",
 		},
 	}
-	for _, v := range testCase {
+	for i, v := range testCase {
 		mockCall := s.mock.On("UpdateAccount", v.MockParamBody).Return(v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			res, _ := json.Marshal(v.Body)
 			// Create request
 			r := httptest.NewRequest(v.Method, "/account", bytes.NewBuffer(res))
-			r.Header.Set("Content-Type", "application/json")
+			if i != 1 {
+				r.Header.Set("Content-Type", "application/json")
+			}
 
 			// Create response recorder
 			w := httptest.NewRecorder()
@@ -377,6 +400,23 @@ func (s *suiteAccount) TestCreateAccount() {
 			"success create account",
 		},
 		{
+			"fail bind data",
+			"POST",
+			1,
+			dto.AccountDTO{
+				Name:    "BCA",
+				Balance: 100000,
+			},
+			nil,
+			dto.AccountDTO{
+				UserID:  1,
+				Name:    "BCA",
+				Balance: 100000,
+			},
+			http.StatusInternalServerError,
+			"fail bind data",
+		},
+		{
 			"There is an empty field",
 			"POST",
 			1,
@@ -426,13 +466,15 @@ func (s *suiteAccount) TestCreateAccount() {
 			"fail create account",
 		},
 	}
-	for _, v := range testCase {
+	for i, v := range testCase {
 		mockCall := s.mock.On("CreateAccount", v.MockParamBody).Return(v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			res, _ := json.Marshal(v.Body)
 			// Create request
 			r := httptest.NewRequest(v.Method, "/account", bytes.NewBuffer(res))
-			r.Header.Set("Content-Type", "application/json")
+			if i != 1 {
+				r.Header.Set("Content-Type", "application/json")
+			}
 
 			// Create response recorder
 			w := httptest.NewRecorder()

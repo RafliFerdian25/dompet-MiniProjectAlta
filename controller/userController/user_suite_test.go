@@ -15,7 +15,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
-	"gorm.io/gorm"
 )
 
 type suiteUsers struct {
@@ -38,12 +37,12 @@ func (s *suiteUsers) TestCreateUsers() {
 		Method             string
 		Body               dto.UserDTO
 		mockParam dto.UserDTO
-		HasReturnBody      bool
+		MockReturnError	error
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
 		{
-			"success",
+			"success create user",
 			"POST",
 			dto.UserDTO{
 				Name:     "rafli",
@@ -55,9 +54,41 @@ func (s *suiteUsers) TestCreateUsers() {
 				Email:    "rafli@gmail.com",
 				Password: "123456",
 			},
-			true,
+			nil,
 			http.StatusOK,
-			"success",
+			"success create user",
+		},
+		{
+			"fail bind data",
+			"POST",
+			dto.UserDTO{
+				Name:     "rafli",
+				Email:    "rafli@gmail.com",
+				Password: "123456",
+			},
+			dto.UserDTO{
+				Name:     "rafli",
+				Email:    "rafli@gmail.com",
+				Password: "123456",
+			},
+			nil,
+			http.StatusInternalServerError,
+			"fail bind data",
+		},
+		{
+			"There is an empty field",
+			"POST",
+			dto.UserDTO{
+				Email:    "rafli@gmail.com",
+				Password: "123456",
+			},
+			dto.UserDTO{
+				Email:    "rafli@gmail.com",
+				Password: "123456",
+			},
+			nil,
+			http.StatusBadRequest,
+			"There is an empty field",
 		},
 		{
 			"failCreate",
@@ -72,24 +103,20 @@ func (s *suiteUsers) TestCreateUsers() {
 				Email:    "rafli@gmail.com",
 				Password: "123456",
 			},
-			false,
+			errors.New("error"),
 			http.StatusInternalServerError,
-			"Failed",
+			"fail create user",
 		},
 	}
 
-	for _, v := range testCase {
-		var mockCall = s.mock.On("CreateUser", v.mockParam)
-		switch v.Name {
-		case "success":
-			mockCall.Return(nil)
-		case "failCreate":
-			mockCall.Return(errors.New("Failed"))
-		}
+	for i, v := range testCase {
+		var mockCall = s.mock.On("CreateUser", v.mockParam).Return(v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			res, _ := json.Marshal(v.Body)
 			r := httptest.NewRequest(v.Method, "/signup", bytes.NewBuffer(res))
-			r.Header.Set("Content-Type", "application/json")
+			if i != 1 {
+				r.Header.Set("Content-Type", "application/json")
+			}
 			w := httptest.NewRecorder()
 
 			// handler echo
@@ -104,13 +131,11 @@ func (s *suiteUsers) TestCreateUsers() {
 
 			s.Equal(v.ExpectedStatusCode, w.Result().StatusCode)
 
-			if v.HasReturnBody {
-				var resp map[string]interface{}
-				err := json.NewDecoder(w.Result().Body).Decode(&resp)
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
 
-				s.NoError(err)
-				s.Equal(v.ExpectedMesaage, resp["message"].(string))
-			}
+			s.NoError(err)
+			s.Equal(v.ExpectedMesaage, resp["message"].(string))
 		})
 		// remove mock
 		mockCall.Unset()
@@ -122,14 +147,23 @@ func (s *suiteUsers) TestLoginUsers() {
 		Name               string
 		ExpectedStatusCode int
 		Method             string
+		MockReturnBody    model.User
+		MockReturnError   error
 		Body               model.User
 		HasReturnBody      bool
 		ExpectedBody       dto.UserResponseDTO
+		ExpectedMessage    string
 	}{
 		{
 			"success",
 			http.StatusOK,
 			"GET",
+			model.User{
+				Name:     "rafli",
+				Email:    "rafli@gmail.com",
+				Password: "123456",
+			},
+			nil,
 			model.User{
 				Name:     "rafli",
 				Email:    "rafli@gmail.com",
@@ -141,59 +175,48 @@ func (s *suiteUsers) TestLoginUsers() {
 				Email:    "rafli@gmail.com",
 				Token: "123456",
 			},
+			"success login",
 		},
-		// {
-		// 	"failLogin",
-		// 	http.StatusInternalServerError,
-		// 	"GET",
-		// 	model.User{
-		// 		Name:     "rafli",
-		// 		Email:    "rafli@gmail.com",
-		// 		Password: "123456",
-		// 	},
-		// 	false,
-		// 	dto.UserResponseDTO{
-		// 		Name:     "rafli",
-		// 		Email:    "rafli@gmail.com",
-		// 		Token: "123456",
-		// 	},
-		// },
+		{
+			"fail bind data",
+			http.StatusInternalServerError,
+			"GET",
+			model.User{
+				Name:     "rafli",
+				Email:    "rafli@gmail.com",
+				Password: "123456",
+			},
+			nil,
+			model.User{},
+			false,
+			dto.UserResponseDTO{},
+			"fail bind data",
+		},
+		{
+			"fail login",
+			http.StatusInternalServerError,
+			"GET",
+			model.User{
+				Name:     "rafli",
+				Email:    "rafli@gmail.com",
+				Password: "123456",
+			},
+			errors.New("error"),
+			model.User{},
+			false,
+			dto.UserResponseDTO{},
+			"fail login",
+		},
 	}
 
-	for _, v := range testCase {
-		var mockAuth model.User
-		switch v.Name {
-		case "success":
-			mockAuth = model.User{
-				Name:     "rafli",
-				Email:    "rafli@gmail.com",
-				Password: "123456",
-			}
-		case "failLogin":
-			mockAuth = model.User{
-				Name:     "rafli",
-				Email:    "rafli@gmail.com",
-				Password: "123456",
-			}
-		}
-		var mockCall = s.mock.On("LoginUser", mockAuth)
-		switch v.Name {
-		case "success":
-			mockCall.Return(model.User{
-				Model:   gorm.Model{
-					ID: 1,
-				},
-				Name:     "rafli",
-				Email:    "rafli@gmail.com",
-				Password: "123456",
-			}, nil)
-		case "failLogin":
-			mockCall.Return(model.User{}, errors.New("error"))
-		}
+	for i, v := range testCase {
+		var mockCall = s.mock.On("LoginUser", v.Body).Return(v.MockReturnBody, v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
 			res, _ := json.Marshal(v.Body)
 			r := httptest.NewRequest(v.Method, "/login", bytes.NewBuffer(res))
-			r.Header.Set("Content-Type", "application/json")
+			if i != 1 {
+				r.Header.Set("Content-Type", "application/json")
+			}
 			w := httptest.NewRecorder()
 
 			// handler echo
@@ -205,11 +228,12 @@ func (s *suiteUsers) TestLoginUsers() {
 
 			s.Equal(v.ExpectedStatusCode, w.Result().StatusCode)
 
-			if v.HasReturnBody {
-				var resp map[string]interface{}
-				err := json.NewDecoder(w.Result().Body).Decode(&resp)
+			var resp map[string]interface{}
+			err = json.NewDecoder(w.Result().Body).Decode(&resp)
+			s.NoError(err)
+			s.Equal(v.ExpectedMessage, resp["message"].(string))
 
-				s.NoError(err)
+			if v.HasReturnBody {
 				s.Equal(v.ExpectedBody.Name, resp["user"].(map[string]interface{})["name"])
 				s.Equal(v.ExpectedBody.Email, resp["user"].(map[string]interface{})["email"])
 			}

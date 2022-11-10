@@ -10,8 +10,8 @@ type TransactionMock struct {
 	mock.Mock
 }
 
-func (t *TransactionMock) GetTransaction(month int, userId uint) (map[string]interface{}, error) {
-	args := t.Called(month, userId)
+func (t *TransactionMock) GetTransaction(userId uint, month int) (map[string]interface{}, error) {
+	args := t.Called(userId, month)
 
 	return args.Get(0).(map[string]interface{}), args.Error(1)
 }

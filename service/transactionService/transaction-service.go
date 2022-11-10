@@ -12,7 +12,7 @@ import (
 )
 
 type TransactionService interface {
-	GetTransaction(month int, userId uint) (map[string]interface{}, error)
+	GetTransaction(userId uint, month int) (map[string]interface{}, error)
 	DeleteTransaction(id uint, userID uint) error
 	UpdateTransaction(transaction dto.TransactionDTO, userId uint) error
 	CreateTransaction(transaction dto.TransactionDTO) error
@@ -25,13 +25,13 @@ type transactionService struct {
 }
 
 // GetTransaction implements TransactionService
-func (ts *transactionService) GetTransaction(month int, userId uint) (map[string]interface{}, error) {
+func (ts *transactionService) GetTransaction(userId uint, month int) (map[string]interface{}, error) {
 	// call repository to get transaction
-	expenseTransactions, err := ts.transactionRepo.GetTransaction(month, userId, constantCategory.ExpenseCategory)
+	expenseTransactions, err := ts.transactionRepo.GetTransaction(userId, constantCategory.ExpenseCategory, month)
 	if err != nil {
 		return map[string]interface{}{}, err
 	}
-	incomeTransactions, err := ts.transactionRepo.GetTransaction(month, userId, constantCategory.IncomeCategory)
+	incomeTransactions, err := ts.transactionRepo.GetTransaction(userId, constantCategory.IncomeCategory, month)
 	if err != nil {
 		return map[string]interface{}{}, err
 	}
