@@ -38,10 +38,10 @@ func (s *suiteReport) TestGetCashflow() {
 		Method             string
 		userId             uint
 		ParamPeriod        string
-		MockReturnBody     map[string]interface{}
+		MockReturnBody     map[string]int64
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       map[string]interface{}
+		ExpectedBody       map[string]int64
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -50,17 +50,17 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"month",
-			map[string]interface{}{
-				"total_income_45_2022":  float64(1000000),
-				"total_expense_45_2022": float64(1000000),
-				"cashflow_45_2022":      float64(1000000),
+			map[string]int64{
+				"total_income_45_2022":  1000000,
+				"total_expense_45_2022": 1000000,
+				"cashflow_45_2022":      1000000,
 			},
 			nil,
 			true,
-			map[string]interface{}{
-				"total_income_45_2022":  float64(1000000),
-				"total_expense_45_2022": float64(1000000),
-				"cashflow_45_2022":      float64(1000000),
+			map[string]int64{
+				"total_income_45_2022":  1000000,
+				"total_expense_45_2022": 1000000,
+				"cashflow_45_2022":      1000000,
 			},
 			http.StatusOK,
 			"success get cashflow",
@@ -70,17 +70,17 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"year",
-			map[string]interface{}{
-				"total_income_45_2022":  float64(1000000),
-				"total_expense_45_2022": float64(1000000),
-				"cashflow_45_2022":      float64(1000000),
+			map[string]int64{
+				"total_income_45_2022":  1000000,
+				"total_expense_45_2022": 1000000,
+				"cashflow_45_2022":      1000000,
 			},
 			nil,
 			false,
-			map[string]interface{}{
-				"total_income_45_2022":  float64(1000000),
-				"total_expense_45_2022": float64(1000000),
-				"cashflow_45_2022":      float64(1000000),
+			map[string]int64{
+				"total_income_45_2022":  1000000,
+				"total_expense_45_2022": 1000000,
+				"cashflow_45_2022":      1000000,
 			},
 			http.StatusBadRequest,
 			"fail get period",
@@ -90,17 +90,17 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"month",
-			map[string]interface{}{
-				"total_income_45_2022":  float64(1000000),
-				"total_expense_45_2022": float64(1000000),
-				"cashflow_45_2022":      float64(1000000),
+			map[string]int64{
+				"total_income_45_2022":  1000000,
+				"total_expense_45_2022": 1000000,
+				"cashflow_45_2022":      1000000,
 			},
 			errors.New(constantError.ErrorNotAuthorized),
 			false,
-			map[string]interface{}{
-				"total_income_45_2022":  float64(1000000),
-				"total_expense_45_2022": float64(1000000),
-				"cashflow_45_2022":      float64(1000000),
+			map[string]int64{
+				"total_income_45_2022":  1000000,
+				"total_expense_45_2022": 1000000,
+				"cashflow_45_2022":      1000000,
 			},
 			http.StatusUnauthorized,
 			"fail get cashflow",
@@ -110,17 +110,17 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"month",
-			map[string]interface{}{
-				"total_income_45_2022":  float64(1000000),
-				"total_expense_45_2022": float64(1000000),
-				"cashflow_45_2022":      float64(1000000),
+			map[string]int64{
+				"total_income_45_2022":  1000000,
+				"total_expense_45_2022": 1000000,
+				"cashflow_45_2022":      1000000,
 			},
 			errors.New("error"),
 			false,
-			map[string]interface{}{
-				"total_income_45_2022":  float64(1000000),
-				"total_expense_45_2022": float64(1000000),
-				"cashflow_45_2022":      float64(1000000),
+			map[string]int64{
+				"total_income_45_2022":  1000000,
+				"total_expense_45_2022": 1000000,
+				"cashflow_45_2022":      1000000,
 			},
 			http.StatusInternalServerError,
 			"fail get cashflow",
@@ -151,7 +151,7 @@ func (s *suiteReport) TestGetCashflow() {
 
 			s.Equal(v.ExpectedMesaage, resp["message"])
 			if v.HasReturnBody {
-				s.Equal(v.ExpectedBody["total_income_45_2022"], resp["data"].(map[string]interface{})["total_income_45_2022"])
+				s.Equal(v.ExpectedBody["total_income_45_2022"], int64(resp["data"].(map[string]interface{})["total_income_45_2022"].(float64)))
 			}
 		})
 		// remove mock

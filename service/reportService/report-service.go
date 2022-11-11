@@ -12,7 +12,7 @@ import (
 )
 
 type ReportService interface {
-	GetCashflow(userId uint, period string) (map[string]interface{}, error)
+	GetCashflow(userId uint, period string) (map[string]int64, error)
 	GetReportbyCategory(userId uint, period string, numberPeriod int) (map[string]interface{}, error)
 	GetAnalyticPeriod(userId uint, period string) (map[string]interface{}, error)
 }
@@ -22,7 +22,7 @@ type reportService struct {
 }
 
 // GetCashflow implements ReportService
-func (rs *reportService) GetCashflow(userId uint, period string) (map[string]interface{}, error) {
+func (rs *reportService) GetCashflow(userId uint, period string) (map[string]int64, error) {
 	// check if period is month or week
 	if period == "month" {
 		period = "%M_%Y"
@@ -35,7 +35,7 @@ func (rs *reportService) GetCashflow(userId uint, period string) (map[string]int
 	// set limit
 	limit := 1
 
-	// call repository to get transaction by period
+	// call repository to get expense transaction by period
 	categoryExpense := uint(2)
 	ExpenseTransactionByPeriod, err := rs.reportRepo.GetTransactionPeriod(userId, period, categoryExpense, limit)
 	if err != nil {
@@ -49,6 +49,7 @@ func (rs *reportService) GetCashflow(userId uint, period string) (map[string]int
 		})
 	}
 
+	// call repository to get income transaction by period
 	categoryIncome := uint(3)
 	IncomeTransactionByPeriod, err := rs.reportRepo.GetTransactionPeriod(userId, period, categoryIncome, limit)
 	if err != nil {
@@ -69,10 +70,10 @@ func (rs *reportService) GetCashflow(userId uint, period string) (map[string]int
 	// calculate cashflow
 	cashflow := totalIncome + totalExpense
 
-	data := map[string]interface{}{
-		"total_income_" + IncomeTransactionByPeriod[0].Period:  totalIncome,
-		"total_expense_" + ExpenseTransactionByPeriod[0].Period: totalExpense,
-		"cashflow_"+ ExpenseTransactionByPeriod[0].Period:      cashflow,
+	data := map[string]int64{
+		"total_income_" + strings.ToLower(IncomeTransactionByPeriod[0].Period):  totalIncome,
+		"total_expense_" + strings.ToLower(ExpenseTransactionByPeriod[0].Period): totalExpense,
+		"cashflow_"+ strings.ToLower(ExpenseTransactionByPeriod[0].Period):      cashflow,
 	}
 	return data, nil
 }

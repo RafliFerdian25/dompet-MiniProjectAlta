@@ -6,10 +6,10 @@ type ReportMock struct {
 	mock.Mock
 }
 
-func (r *ReportMock) GetCashflow(userId uint, period string) (map[string]interface{}, error) {
+func (r *ReportMock) GetCashflow(userId uint, period string) (map[string]int64, error) {
 	args := r.Called(userId, period)
 
-	return args.Get(0).(map[string]interface{}), args.Error(1)
+	return args.Get(0).(map[string]int64), args.Error(1)
 }
 func (r *ReportMock) GetReportbyCategory(userId uint, period string, numberPeriod int) (map[string]interface{}, error) {
 	args := r.Called(userId, period, numberPeriod)
