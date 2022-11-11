@@ -12,7 +12,7 @@ import (
 )
 
 type DebtService interface {
-	GetDebt(userId uint, debtStatus string) (map[string]interface{}, error)
+	GetDebt(userId uint, debtStatus string) (map[string][]dto.GetDebtTransactionResponse, error)
 	DeleteDebt(id, userId uint) error
 	CreateDebt(debtTransaction dto.DebtTransactionDTO) error
 }
@@ -24,7 +24,7 @@ type debtService struct {
 }
 
 // GetDebt implements DebtService
-func (ds *debtService) GetDebt(userId uint, debtStatus string) (map[string]interface{}, error) {
+func (ds *debtService) GetDebt(userId uint, debtStatus string) (map[string][]dto.GetDebtTransactionResponse, error) {
 	// call repository to get the debt
 	debt, err := ds.debtRepo.GetDebt(userId, constantCategory.DeptSubCategory, debtStatus)
 	if err != nil {
@@ -38,7 +38,7 @@ func (ds *debtService) GetDebt(userId uint, debtStatus string) (map[string]inter
 	}
 
 	// merge the debt and loan
-	data := map[string]interface{}{
+	data := map[string][]dto.GetDebtTransactionResponse{
 		"debt": debt,
 		"loan": loan,
 	}

@@ -59,12 +59,6 @@ func (ac *AccountController) GetAccountByUser(c echo.Context) error {
 	// get account by user from service
 	userAccounts, err := ac.AccountService.GetAccountByUser(userId)
 	if err != nil {
-		if val, ok := constantError.ErrorCode[err.Error()]; ok {
-			return c.JSON(val, echo.Map{
-				"message": "fail get account by user",
-				"error":   err.Error(),
-			})
-		}
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"message": "fail get account by user",
 			"error":   err.Error(),
@@ -73,8 +67,8 @@ func (ac *AccountController) GetAccountByUser(c echo.Context) error {
 
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message":     "success get account by user",
-		"Accounts": userAccounts,
+		"message":  "success get account by user",
+		"accounts": userAccounts,
 	})
 }
 
@@ -102,7 +96,7 @@ func (ac *AccountController) UpdateAccount(c echo.Context) error {
 
 	// add id to account struct
 	account.ID = uint(id)
-	
+
 	// Get user id from jwt
 	userId, _ := helper.GetJwt(c)
 	account.UserID = userId

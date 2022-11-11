@@ -5,6 +5,6 @@ import (
 )
 
 type CategoryRepository interface {
-	GetCategoryByID(id uint) ([]model.Category, error)
+	GetCategoryByID(id uint) (model.Category, error)
 	GetAllCategory() ([]model.Category, error)
 }

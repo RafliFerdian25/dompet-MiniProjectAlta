@@ -15,18 +15,18 @@ type CategoryController struct {
 
 func (cc *CategoryController) GetCategoryByID(c echo.Context) error  {
 	// get id from url param
-	paramID := c.Param("categoryId")
+	paramID := c.Param("id")
 	// convert string to int
 	categoryID, err := strconv.Atoi(paramID)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
-			"message": "fail get category by id",
+			"message": "fail get id",
 			"error":   err.Error(),
 		})
 	}
 
 	// get category by id from service
-	categoriesID, err := cc.CategoryService.GetCategoryByCategoryID(uint(categoryID))
+	categoriesID, err := cc.CategoryService.GetCategoryByID(uint(categoryID))
 	if err != nil {
 		if val, ok := constantError.ErrorCode[err.Error()]; ok {
 			return c.JSON(val, echo.Map{
@@ -42,7 +42,7 @@ func (cc *CategoryController) GetCategoryByID(c echo.Context) error  {
 
 	// return response success
 	return c.JSON(http.StatusOK, echo.Map{
-		"message":   "success",
+		"message":   "success get category by id",
 		"categories": categoriesID,
 	})
 }
@@ -63,7 +63,7 @@ func (cc *CategoryController) GetAllCategory(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
-		"message":   "success",
+		"message":   "success get category",
 		"categories": categories,
 	})
 }

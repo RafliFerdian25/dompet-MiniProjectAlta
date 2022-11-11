@@ -1,4 +1,4 @@
-package userMockService
+package userMockRepository
 
 import (
 	"dompet-miniprojectalta/models/dto"

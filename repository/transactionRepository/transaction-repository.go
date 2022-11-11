@@ -5,7 +5,7 @@ import (
 )
 
 type TransactionRepository interface {
-	GetTransaction(month int, userId, categpryID uint) ([]dto.GetTransactionDTO, error)
+	GetTransaction(userId, categoryID uint, month int) ([]dto.GetTransactionDTO, error)
 	DeleteTransaction(id uint, account dto.AccountDTO) error
 	UpdateTransaction(newTransaction dto.TransactionDTO, oldTransaction dto.TransactionJoin, newAccount, oldAccount dto.AccountDTO) error
 	GetTransactionById(id uint) (dto.TransactionJoin, error)

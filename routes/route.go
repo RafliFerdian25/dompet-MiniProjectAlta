@@ -106,7 +106,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// Category Routes
 	appCategory := app.Group("/categories", middleware.JWTWithConfig(config))
 	appCategory.GET("", categoryController.GetAllCategory)
-	appCategory.GET("/:categoryId", categoryController.GetCategoryByID)
+	appCategory.GET("/:id", categoryController.GetCategoryByID)
 	
 	// SubCategory Routes
 	appSubCategory := app.Group("/subcategories", middleware.JWTWithConfig(config))
