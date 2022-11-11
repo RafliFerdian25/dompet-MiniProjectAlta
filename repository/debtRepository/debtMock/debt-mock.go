@@ -11,7 +11,7 @@ type DebtMock struct {
 }
 
 func (d *DebtMock) GetDebt(userId uint, subCategory int, debtStatus string) ([]dto.GetDebtTransactionResponse, error) {
-	args := d.Called(userId, debtStatus)
+	args := d.Called(userId, subCategory ,debtStatus)
 
 	return args.Get(0).([]dto.GetDebtTransactionResponse), args.Error(1)
 }
