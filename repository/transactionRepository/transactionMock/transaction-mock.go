@@ -22,8 +22,8 @@ func (t *TransactionMock) DeleteTransaction(id uint,  account dto.AccountDTO) er
 	return args.Error(0)
 }
 
-func (t *TransactionMock) UpdateTransaction(newTransaction dto.TransactionDTO, oldTransaction dto.TransactionJoin, newAccount, oldAccount dto.AccountDTO) error {
-	args := t.Called(newTransaction, oldTransaction, newAccount, oldAccount)
+func (t *TransactionMock) UpdateTransaction(newTransaction dto.TransactionDTO, oldAccountID uint, newAccountBalance, oldAccountBalance float64) error {
+	args := t.Called(newTransaction, oldAccountID, newAccountBalance, oldAccountBalance)
 
 	return args.Error(0)
 }

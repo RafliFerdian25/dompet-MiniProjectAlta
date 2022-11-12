@@ -126,7 +126,7 @@ func (ts *transactionService) UpdateTransaction(newTransaction dto.TransactionDT
 	// update balance old account
 	oldAccount.Balance -= oldTransaction.Amount
 
-	// check if category id
+	// check if category id is expense
 	if newSubCategory.CategoryID == 2 {
 		// check if balance is enough
 		if oldTransaction.AccountID == newAccount.ID {
@@ -145,7 +145,7 @@ func (ts *transactionService) UpdateTransaction(newTransaction dto.TransactionDT
 	newAccount.Balance += newTransaction.Amount
 
 	// call repository to save transaction
-	err = ts.transactionRepo.UpdateTransaction(newTransaction, oldTransaction, newAccount, oldAccount)
+	err = ts.transactionRepo.UpdateTransaction(newTransaction, oldAccount.ID, newAccount.Balance, oldAccount.Balance)
 	if err != nil {
 		return err
 	}
