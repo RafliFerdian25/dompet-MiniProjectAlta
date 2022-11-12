@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - development
+      - remidi
   pull_request:
     branches:
       - main

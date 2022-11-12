@@ -56,7 +56,11 @@ func (tac *TransactionAccController) GetTransactionAccount(c echo.Context) error
 	// Return response if success
 	return c.JSON(http.StatusOK, echo.Map{
 		"message": "success get transaction account",
-		"transaction_account_month_"+ strconv.Itoa(month):    transAcc,
+		"transaction_account": map[string]interface{}{
+			"month": map[string]interface{}{
+				strconv.Itoa(month): transAcc,
+			},
+		},
 	})
 }
 
