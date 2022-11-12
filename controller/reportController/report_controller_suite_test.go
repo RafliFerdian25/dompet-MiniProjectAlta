@@ -34,15 +34,16 @@ func (s *suiteReport) SetupTest() {
 
 func (s *suiteReport) TestGetCashflow() {
 	// Setup
+	monthPeriod := "november 2022"
 	testCase := []struct {
 		Name               string
 		Method             string
 		userId             uint
 		ParamPeriod        string
-		MockReturnBody     map[string]int64
+		MockReturnBody     map[string]interface{}
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       map[string]int64
+		ExpectedBody       map[string]interface{}
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -51,17 +52,35 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"month",
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
+			map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(20000),
+				},
+				"total_expense": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(-10000),
+				},
+				"cashflow": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(10000),
+				},
 			},
 			nil,
 			true,
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
+			map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(20000),
+				},
+				"total_expense": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(-10000),
+				},
+				"cashflow": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(10000),
+				},
 			},
 			http.StatusOK,
 			"success get cashflow",
@@ -71,38 +90,22 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"year",
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			nil,
 			false,
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			http.StatusBadRequest,
 			"fail get period",
 		},
 		{
-			"fail get cashflow",
+			"error auth",
 			"GET",
 			1,
 			"month",
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			errors.New(constantError.ErrorNotAuthorized),
 			false,
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			http.StatusUnauthorized,
 			"fail get cashflow",
 		},
@@ -111,18 +114,10 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"month",
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			errors.New("error"),
 			false,
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			http.StatusInternalServerError,
 			"fail get cashflow",
 		},
@@ -152,7 +147,9 @@ func (s *suiteReport) TestGetCashflow() {
 
 			s.Equal(v.ExpectedMesaage, resp["message"])
 			if v.HasReturnBody {
-				s.Equal(v.ExpectedBody["total_income_45_2022"], int64(resp["data"].(map[string]interface{})["total_income_45_2022"].(float64)))
+				s.Equal(v.ExpectedBody["total_income"].(map[string]interface{})["total"], int64(resp["data"].(map[string]interface{})["total_income"].(map[string]interface{})["total"].(float64)))
+				s.Equal(v.ExpectedBody["total_expense"].(map[string]interface{})["total"], int64(resp["data"].(map[string]interface{})["total_expense"].(map[string]interface{})["total"].(float64)))
+				s.Equal(v.ExpectedBody["cashflow"].(map[string]interface{})["total"], int64(resp["data"].(map[string]interface{})["cashflow"].(map[string]interface{})["total"].(float64)))
 			}
 		})
 		// remove mock
