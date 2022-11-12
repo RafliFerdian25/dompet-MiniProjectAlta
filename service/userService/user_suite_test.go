@@ -15,16 +15,15 @@ import (
 
 type suiteUsers struct {
 	suite.Suite
-	userService *userServiceImpl
+	userService UserService
 	mock        *userMockRepository.UserMock
 }
 
 func (s *suiteUsers) SetupSuite() {
 	mock := &userMockRepository.UserMock{}
 	s.mock = mock
-	s.userService = &userServiceImpl{
-		userRepo: s.mock,
-	}
+	NewUserService := NewUserService(s.mock)
+	s.userService = NewUserService
 }
 
 func (s *suiteUsers) TestCreateUsers() {
