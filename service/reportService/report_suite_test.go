@@ -191,10 +191,10 @@ func (s *suiteReports) TestGetCashflow() {
 }
 
 func (s *suiteReports) TestGetReportbyCategory() {
-	_, month, _ := time.Now().Date()
-	monthPeriod := strconv.Itoa(int(month))
-	_, week := time.Now().ISOWeek()
-	weekPeriod := strconv.Itoa(week)
+	_, monthPeriodInt, _ := time.Now().Date()
+	monthPeriodString := strconv.Itoa(int(monthPeriodInt))
+	_, weekPeriodInt := time.Now().ISOWeek()
+	weekPeriodString := strconv.Itoa(weekPeriodInt)
 	testCase := []struct {
 		Name                   string
 		MockReturnErrorExpense error
@@ -214,7 +214,7 @@ func (s *suiteReports) TestGetReportbyCategory() {
 			MockReturnBodyExpense: []dto.ReportSpendingCategoryPeriod{
 				{
 					SubCategory: "Entainment",
-					Period:      monthPeriod,
+					Period:      monthPeriodString,
 					Total:       -10000,
 					Persentage:  100,
 				},
@@ -223,20 +223,20 @@ func (s *suiteReports) TestGetReportbyCategory() {
 			MockReturnBodyIncome: []dto.ReportSpendingCategoryPeriod{
 				{
 					SubCategory: "Salary",
-					Period:      monthPeriod,
+					Period:      monthPeriodString,
 					Total:       10000,
 					Persentage:  100,
 				},
 			},
 			ParamUserId:       1,
 			ParamPeriod:       "month",
-			ParamNumberPeriod: int(month),
+			ParamNumberPeriod: int(monthPeriodInt),
 			HasReturnBody:     true,
 			ExpectedBody: map[string]interface{}{
 				"expense_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "Entainment",
-						Period:      monthPeriod,
+						Period:      monthPeriodString,
 						Total:       -10000,
 						Persentage:  100,
 					},
@@ -244,13 +244,21 @@ func (s *suiteReports) TestGetReportbyCategory() {
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "Salary",
-						Period:      monthPeriod,
+						Period:      monthPeriodString,
 						Total:       10000,
 						Persentage:  100,
 					},
 				},
-				"total_income_month_" + monthPeriod:  int64(10000),
-				"total_expense_month_" + monthPeriod: int64(-10000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": int(monthPeriodInt),
+					"total":  int64(-10000),
+				},
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": int(monthPeriodInt),
+					"total":  int64(10000),
+				},
 			},
 			ExpectedError: nil,
 		},
@@ -260,7 +268,7 @@ func (s *suiteReports) TestGetReportbyCategory() {
 			MockReturnBodyExpense: []dto.ReportSpendingCategoryPeriod{
 				{
 					SubCategory: "Entainment",
-					Period:      weekPeriod,
+					Period:      weekPeriodString,
 					Total:       -10000,
 					Persentage:  100,
 				},
@@ -269,20 +277,20 @@ func (s *suiteReports) TestGetReportbyCategory() {
 			MockReturnBodyIncome: []dto.ReportSpendingCategoryPeriod{
 				{
 					SubCategory: "Salary",
-					Period:      weekPeriod,
+					Period:      weekPeriodString,
 					Total:       10000,
 					Persentage:  100,
 				},
 			},
 			ParamUserId:       1,
 			ParamPeriod:       "week",
-			ParamNumberPeriod: week,
+			ParamNumberPeriod: weekPeriodInt,
 			HasReturnBody:     true,
 			ExpectedBody: map[string]interface{}{
 				"expense_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "Entainment",
-						Period:      weekPeriod,
+						Period:      weekPeriodString,
 						Total:       -10000,
 						Persentage:  100,
 					},
@@ -290,13 +298,21 @@ func (s *suiteReports) TestGetReportbyCategory() {
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "Salary",
-						Period:      weekPeriod,
+						Period:      weekPeriodString,
 						Total:       10000,
 						Persentage:  100,
 					},
 				},
-				"total_income_week_" + weekPeriod:  int64(10000),
-				"total_expense_week_" + weekPeriod: int64(-10000),
+				"total_expense": map[string]interface{}{
+					"period": "week",
+					"number": weekPeriodInt,
+					"total":  int64(-10000),
+				},
+				"total_income": map[string]interface{}{
+					"period": "week",
+					"number": weekPeriodInt,
+					"total":  int64(10000),
+				},
 			},
 			ExpectedError: nil,
 		},

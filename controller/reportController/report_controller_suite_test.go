@@ -192,7 +192,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_expense_month_11": float64(1000000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "test",
@@ -201,7 +205,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_income_month_11": float64(1000000),
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 			},
 			nil,
 			true,
@@ -214,7 +222,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_expense_month_11": float64(1000000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "test",
@@ -223,7 +235,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_income_month_11": float64(1000000),
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total": float64(1000000),
+				},
 			},
 			http.StatusOK,
 			"success get report by category",
@@ -244,7 +260,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_expense_month_11": float64(1000000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "test",
@@ -253,7 +273,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_income_month_11": float64(1000000),
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total": float64(1000000),
+				},
 			},
 			nil,
 			true,
@@ -266,7 +290,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_expense_month_11": float64(1000000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "test",
@@ -275,7 +303,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_income_month_11": float64(1000000),
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total": float64(1000000),
+				},
 			},
 			http.StatusOK,
 			"success get report by category",
@@ -392,9 +424,9 @@ func (s *suiteReport) TestGetReportbyCategory() {
 			s.Equal(v.ExpectedMesaage, resp["message"])
 			if v.HasReturnBody {
 				s.Equal(v.ExpectedBody["expense_by_category"].([]dto.ReportSpendingCategoryPeriod)[0].Total, int64(resp["data"].(map[string]interface{})["expense_by_category"].([]interface{})[0].(map[string]interface{})["total"].(float64)))
-				s.Equal(v.ExpectedBody["total_expense_month_11"], resp["data"].(map[string]interface{})["total_expense_month_11"])
+				s.Equal(v.ExpectedBody["total_expense"].(map[string]interface{})["total"], resp["data"].(map[string]interface{})["total_expense"].(map[string]interface{})["total"])
 				s.Equal(v.ExpectedBody["income_by_category"].([]dto.ReportSpendingCategoryPeriod)[0].Total, int64(resp["data"].(map[string]interface{})["income_by_category"].([]interface{})[0].(map[string]interface{})["total"].(float64)))
-				s.Equal(v.ExpectedBody["total_income_month_11"], resp["data"].(map[string]interface{})["total_income_month_11"])
+				s.Equal(v.ExpectedBody["total_income"].(map[string]interface{})["total"], resp["data"].(map[string]interface{})["total_income"].(map[string]interface{})["total"])
 			}
 		})
 		// remove mock

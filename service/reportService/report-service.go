@@ -132,9 +132,17 @@ func (rs *reportService) GetReportbyCategory(userId uint, period string, numberP
 
 	data := map[string]interface{}{
 		"expense_by_category": expenseByCategory,
-		"total_expense_" + periodData["period"].(string) + "_" + strconv.Itoa(periodData["numberPeriod"].(int)): totalExpense,
+		"total_expense": map[string]interface{}{
+			"period": periodData["period"].(string),
+			"number": periodData["numberPeriod"].(int),
+			"total":  totalExpense,
+		},
 		"income_by_category": incomeByCategory,
-		"total_income_" + periodData["period"].(string) + "_" + strconv.Itoa(periodData["numberPeriod"].(int)): totalIncome,
+		"total_income": map[string]interface{}{
+			"period": periodData["period"].(string),
+			"number": periodData["numberPeriod"].(int),
+			"total":  totalIncome,
+		},
 	}
 	return data, nil
 }
