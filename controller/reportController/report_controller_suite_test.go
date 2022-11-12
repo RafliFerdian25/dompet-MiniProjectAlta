@@ -7,6 +7,7 @@ import (
 	reportMockService "dompet-miniprojectalta/service/reportService/reportMock"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -433,9 +434,20 @@ func (s *suiteReport) TestGetAnalyticPeriod() {
 						Total:  100000,
 					},
 				},
-				"net_income_november_2022" : 50000,
-				"comparison_expense_november_2022_and_october_2022" : "0%",
-				"comparison_income_november_2022_and_october_2022" : "0%",
+				"net_income" : map[string]interface{}{
+					"period": "november 2022",
+					"result": 50000,
+				},
+				"comparison_expense": map[string]interface{}{
+					"period_after":  "november 2022",
+					"period_before": "october 2022",
+					"result":        "-50%",
+				},
+				"comparison_income": map[string]interface{}{
+					"period_after":  "november 2022",
+					"period_before": "october 2022",
+					"result":        "-50%",
+				},
 			},
 			nil,
 			true,
@@ -452,9 +464,20 @@ func (s *suiteReport) TestGetAnalyticPeriod() {
 						Total:  100000,
 					},
 				},
-				"net_income_november_2022" : 50000,
-				"comparison_expense_november_2022_and_october_2022" : "0%",
-				"comparison_income_november_2022_and_october_2022" : "0%",
+				"net_income" : map[string]interface{}{
+					"period": "november 2022",
+					"result": 50000,
+				},
+				"comparison_expense": map[string]interface{}{
+					"period_after":  "november 2022",
+					"period_before": "october 2022",
+					"result":        "-50%",
+				},
+				"comparison_income": map[string]interface{}{
+					"period_after":  "november 2022",
+					"period_before": "october 2022",
+					"result":        "-50%",
+				},
 			},
 			http.StatusOK,
 			"success get report month",
@@ -521,11 +544,12 @@ func (s *suiteReport) TestGetAnalyticPeriod() {
 
 			s.Equal(v.ExpectedMesaage, resp["message"])
 			if v.HasReturnBody {
+				fmt.Println(v.ExpectedBody["net_income"].(map[string]interface{})["result"])
 				s.Equal(v.ExpectedBody["expense_period"].([]dto.TransactionReportPeriod)[0].Total, int64(resp["data"].(map[string]interface{})["expense_period"].([]interface{})[0].(map[string]interface{})["total"].(float64)))
 				s.Equal(v.ExpectedBody["income_period"].([]dto.TransactionReportPeriod)[0].Total, int64(resp["data"].(map[string]interface{})["income_period"].([]interface{})[0].(map[string]interface{})["total"].(float64)))
-				s.Equal(v.ExpectedBody["net_income_november_2022"], int(resp["data"].(map[string]interface{})["net_income_november_2022"].(float64)))
-				s.Equal(v.ExpectedBody["comparison_expense_november_2022_and_october_2022"], resp["data"].(map[string]interface{})["comparison_expense_november_2022_and_october_2022"])
-				s.Equal(v.ExpectedBody["comparison_income_november_2022_and_october_2022"], resp["data"].(map[string]interface{})["comparison_income_november_2022_and_october_2022"])
+				s.Equal(v.ExpectedBody["net_income"].(map[string]interface{})["result"], int(resp["data"].(map[string]interface{})["net_income"].(map[string]interface{})["result"].(float64)))
+				s.Equal(v.ExpectedBody["comparison_expense"].(map[string]interface{})["result"], resp["data"].(map[string]interface{})["comparison_expense"].(map[string]interface{})["result"])
+				s.Equal(v.ExpectedBody["comparison_income"].(map[string]interface{})["result"], resp["data"].(map[string]interface{})["comparison_income"].(map[string]interface{})["result"])
 			}
 		})
 		// remove mock
