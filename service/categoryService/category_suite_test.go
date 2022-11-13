@@ -2,65 +2,58 @@ package categoryService
 
 import (
 	"dompet-miniprojectalta/models/dto"
-	"dompet-miniprojectalta/models/model"
 	categoryMockRepository "dompet-miniprojectalta/repository/categoryRepository/categoryMock"
 	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
-	"gorm.io/gorm"
 )
 
 type suiteCategorys struct {
 	suite.Suite
-	categoryService *categoryService
+	categoryService CategoryService
 	mock            *categoryMockRepository.CategoryMock
 }
 
 func (s *suiteCategorys) SetupSuite() {
 	mock := &categoryMockRepository.CategoryMock{}
 	s.mock = mock
-	s.categoryService = &categoryService{
-		categoryRepository: s.mock,
-	}
+	NewCategoryService := NewCategoryService(s.mock)
+	s.categoryService = NewCategoryService
 }
 
 func (s *suiteCategorys) TestGetCategoryByID() {
 	testCase := []struct {
 		Name            string
 		MockReturnError error
-		MockReturnBody  model.Category
+		MockReturnBody  dto.Category
 		ParamId         uint
 		HasReturnBody   bool
-		ExpectedBody    model.Category
+		ExpectedBody    dto.Category
 	}{
 		{
 			"success",
 			nil,
-			model.Category{
-				Model: gorm.Model{
+			dto.Category{
 					ID: 1,
-				},
 				Name:          "test",
-				SubCategories: []model.SubCategory{},
+				SubCategories: []dto.SubCategory{},
 			},
 			1,
 			true,
-			model.Category{
-				Model: gorm.Model{
+			dto.Category{
 					ID: 1,
-				},
 				Name:          "test",
-				SubCategories: []model.SubCategory{},
+				SubCategories: []dto.SubCategory{},
 			},
 		},
 		{
 			"failed get account",
 			errors.New("error"),
-			model.Category{},
+			dto.Category{},
 			1,
 			false,
-			model.Category{},
+			dto.Category{},
 		},
 	}
 

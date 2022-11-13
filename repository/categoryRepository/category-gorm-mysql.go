@@ -11,15 +11,15 @@ type categoryRepository struct {
 	db *gorm.DB
 }
 // GetCategoryByID implements categoryRepository
-func (s *categoryRepository) GetCategoryByID(id uint) (model.Category, error) {
-	var CategoriesID model.Category
+func (s *categoryRepository) GetCategoryByID(id uint) (dto.Category, error) {
+	var CategoriesID dto.Category
 	// get data category from database by id
 	err := s.db.Model(&model.Category{}).Preload("SubCategories").Where("id = ?", id).Find(&CategoriesID)
 	if err.Error != nil {
-		return model.Category{}, err.Error
+		return dto.Category{}, err.Error
 	}
 	if err.RowsAffected <= 0 {
-		return model.Category{}, gorm.ErrRecordNotFound
+		return dto.Category{}, gorm.ErrRecordNotFound
 	}
 	return CategoriesID, nil
 }

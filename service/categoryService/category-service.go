@@ -2,12 +2,11 @@ package categoryService
 
 import (
 	"dompet-miniprojectalta/models/dto"
-	"dompet-miniprojectalta/models/model"
 	"dompet-miniprojectalta/repository/categoryRepository"
 )
 
 type CategoryService interface {
-	GetCategoryByID(id uint) (model.Category, error)
+	GetCategoryByID(id uint) (dto.Category, error)
 	GetAllCategory() ([]dto.Category, error)
 }
 
@@ -16,10 +15,10 @@ type categoryService struct {
 }
 
 // GetCategoryByID implements CategoryService
-func (cs *categoryService) GetCategoryByID(id uint) (model.Category, error) {
+func (cs *categoryService) GetCategoryByID(id uint) (dto.Category, error) {
 	categoriesID, err := cs.categoryRepository.GetCategoryByID(id)
 	if err != nil {
-		return model.Category{}, err
+		return dto.Category{}, err
 	}
 	return categoriesID, nil
 }
