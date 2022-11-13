@@ -82,7 +82,7 @@ func (sc *subCategoryRepository) UpdateSubCategory(subCategory dto.SubCategoryDT
 	return nil
 }
 
-func NewCategoryRepository(db *gorm.DB) SubCategoryRepository {
+func NewSubCategoryRepository(db *gorm.DB) SubCategoryRepository {
 	return &subCategoryRepository{
 		db: db,
 	}
