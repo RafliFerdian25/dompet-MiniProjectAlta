@@ -53,7 +53,7 @@ func (tr *transactionRepository) DeleteTransaction(id uint, account dto.AccountD
 }
 
 // UpdateTransaction implements TransactionRepository
-func (tr *transactionRepository) UpdateTransaction(newTransaction dto.TransactionDTO, oldTransaction dto.TransactionJoin, newAccount, oldAccount dto.AccountDTO) error {
+func (tr *transactionRepository) UpdateTransaction(newTransaction dto.TransactionDTO, oldAccountID uint, newAccountBalance, oldAccountBalance float64) error {
 	err := tr.db.Transaction(func(tx *gorm.DB) error {
 		// update transaction
 		err := tx.Model(&model.Transaction{}).Where("id = ?", newTransaction.ID).Updates(model.Transaction{
@@ -67,7 +67,7 @@ func (tr *transactionRepository) UpdateTransaction(newTransaction dto.Transactio
 		}
 
 		// update old account balance transaction
-		err = tx.Model(&model.Account{}).Where("id = ?", oldAccount.ID).Update("balance", oldAccount.Balance)
+		err = tx.Model(&model.Account{}).Where("id = ?", oldAccountID).Update("balance", oldAccountBalance)
 		if err.Error != nil {
 			return err.Error
 		}
@@ -76,7 +76,7 @@ func (tr *transactionRepository) UpdateTransaction(newTransaction dto.Transactio
 		}
 
 		// update new account balance transaction
-		errUpdate := tx.Model(&model.Account{}).Where("id = ?", newTransaction.AccountID).Update("balance", newAccount.Balance)
+		errUpdate := tx.Model(&model.Account{}).Where("id = ?", newTransaction.AccountID).Update("balance", newAccountBalance)
 		if errUpdate.Error != nil {
 			return errUpdate.Error
 		}
