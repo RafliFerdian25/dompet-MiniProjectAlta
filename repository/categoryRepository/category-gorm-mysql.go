@@ -15,6 +15,7 @@ func (s *categoryRepository) GetCategoryByID(id uint) (dto.Category, error) {
 	var CategoriesID dto.Category
 	// get data category from database by id
 	err := s.db.Model(&model.Category{}).Preload("SubCategories").Where("id = ?", id).Find(&CategoriesID)
+
 	if err.Error != nil {
 		return dto.Category{}, err.Error
 	}
