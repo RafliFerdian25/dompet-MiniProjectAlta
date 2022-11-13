@@ -1,6 +1,7 @@
 package categoryRepository
 
 import (
+	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 
 	"gorm.io/gorm"
@@ -24,8 +25,8 @@ func (s *categoryRepository) GetCategoryByID(id uint) (model.Category, error) {
 }
 
 // GetAllCategory implements CategoryRepository
-func (b *categoryRepository) GetAllCategory() ([]model.Category, error) {
-	var categories []model.Category
+func (b *categoryRepository) GetAllCategory() ([]dto.Category, error) {
+	var categories []dto.Category
 	// get all data category from database
 	err := b.db.Model(&model.Category{}).Preload("SubCategories").Find(&categories).Error
 	if err != nil {

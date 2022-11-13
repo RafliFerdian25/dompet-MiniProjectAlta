@@ -1,6 +1,7 @@
 package categoryService
 
 import (
+	"dompet-miniprojectalta/models/dto"
 	"dompet-miniprojectalta/models/model"
 	categoryMockRepository "dompet-miniprojectalta/repository/categoryRepository/categoryMock"
 	"errors"
@@ -29,7 +30,7 @@ func (s *suiteCategorys) TestGetCategoryByID() {
 		Name            string
 		MockReturnError error
 		MockReturnBody  model.Category
-		ParamId     uint
+		ParamId         uint
 		HasReturnBody   bool
 		ExpectedBody    model.Category
 	}{
@@ -84,42 +85,38 @@ func (s *suiteCategorys) TestGetAllCategory() {
 	testCase := []struct {
 		Name            string
 		MockReturnError error
-		MockReturnBody  []model.Category
+		MockReturnBody  []dto.Category
 		ParamUserId     uint
 		HasReturnBody   bool
-		ExpectedBody    []model.Category
+		ExpectedBody    []dto.Category
 	}{
 		{
 			"success",
 			nil,
-			[]model.Category{
+			[]dto.Category{
 				{
-					Model: gorm.Model{
-						ID: 1,
-					},
+					ID:            1,
 					Name:          "test",
-					SubCategories: []model.SubCategory{},
+					SubCategories: []dto.SubCategory{},
 				},
 			},
 			1,
 			true,
-			[]model.Category{
+			[]dto.Category{
 				{
-					Model: gorm.Model{
-						ID: 1,
-					},
+					ID:            1,
 					Name:          "test",
-					SubCategories: []model.SubCategory{},
+					SubCategories: []dto.SubCategory{},
 				},
 			},
 		},
 		{
 			"failed get account",
 			errors.New("error"),
-			[]model.Category{},
+			[]dto.Category{},
 			1,
 			false,
-			[]model.Category{},
+			[]dto.Category{},
 		},
 	}
 

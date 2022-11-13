@@ -1,6 +1,7 @@
 package dto
 
-type CategoryDTO struct {
-	ID   uint   `json:"id"`
-	Name string `json:"name" gorm:"notNull"`
+type Category struct {
+	ID            uint   `json:"id"`
+	Name          string `json:"name"`
+	SubCategories []SubCategory
 }
