@@ -320,6 +320,7 @@ func (s *suiteTransaction) TestDeleteAccount() {
 }
 
 func (s *suiteTransaction) TestUpdateTransaction() {
+	userid := uint(1)
 	testCase := []struct {
 		Name                             string
 		GetOldTransactionMockReturnError error
@@ -370,7 +371,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -527,7 +528,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -570,7 +571,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 3,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -613,7 +614,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -661,7 +662,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -714,7 +715,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -767,7 +768,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -820,7 +821,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -873,7 +874,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			errors.New("failed update transaction"),
@@ -932,6 +933,7 @@ func (s *suiteTransaction) TestUpdateTransaction() {
 }
 
 func (s *suiteTransaction) TestCreateTransaction() {
+	userid := uint(1)
 	testCase := []struct {
 		Name                          string
 		GetSubCategoryMockReturnError error
@@ -950,7 +952,7 @@ func (s *suiteTransaction) TestCreateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -1007,7 +1009,7 @@ func (s *suiteTransaction) TestCreateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -1036,7 +1038,7 @@ func (s *suiteTransaction) TestCreateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			errors.New(constantError.ErrorAccountNotFound),
@@ -1065,7 +1067,7 @@ func (s *suiteTransaction) TestCreateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -1098,7 +1100,7 @@ func (s *suiteTransaction) TestCreateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 1,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -1131,7 +1133,7 @@ func (s *suiteTransaction) TestCreateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
@@ -1164,7 +1166,7 @@ func (s *suiteTransaction) TestCreateTransaction() {
 			dto.SubCategoryDTO{
 				ID:         7,
 				CategoryID: 2,
-				UserID:     1,
+				UserID:     &userid,
 				Name:       "Entertainment",
 			},
 			nil,
