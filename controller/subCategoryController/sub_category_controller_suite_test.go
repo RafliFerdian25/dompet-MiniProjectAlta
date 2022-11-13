@@ -107,7 +107,7 @@ func (s *suiteSubCategory) TestCreateSubCategory() {
 		body := dto.SubCategoryDTO{
 			CategoryID: v.Body.CategoryID,
 			Name:       v.Body.Name,
-			UserID: v.userId,
+			UserID: &v.userId,
 		}
 		mockCall := s.mock.On("CreateSubCategory", body).Return(v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {
@@ -146,6 +146,8 @@ func (s *suiteSubCategory) TestCreateSubCategory() {
 }
 
 func (s *suiteSubCategory) TestGetSubCategoryByUser() {
+	UserID := uint(1)
+
 	testCase := []struct {
 		Name               string
 		Method             string
@@ -166,13 +168,13 @@ func (s *suiteSubCategory) TestGetSubCategoryByUser() {
 					ID: 	   1,
 					CategoryID: 2,
 					Name:       "test",
-					UserID: 1,
+					UserID: &UserID,
 				},
 				{
 					ID: 	   2,
 					CategoryID: 2,
 					Name:       "test2",
-					UserID: 1,
+					UserID: &UserID,
 				},
 			},
 			nil,
@@ -182,13 +184,13 @@ func (s *suiteSubCategory) TestGetSubCategoryByUser() {
 					ID: 	   1,
 					CategoryID: 2,
 					Name:       "test",
-					UserID: 1,
+					UserID: &UserID,
 				},
 				{
 					ID: 	   2,
 					CategoryID: 2,
 					Name:       "test2",
-					UserID: 1,
+					UserID: &UserID,
 				},
 			},
 			http.StatusOK,
@@ -423,7 +425,7 @@ func (s *suiteSubCategory) TestUpdateSubCategory() {
 			ID: 	   uint(id),
 			CategoryID: v.Body.CategoryID,
 			Name:       v.Body.Name,
-			UserID:    v.userId,
+			UserID:    &v.userId,
 		}
 		mockCall := s.mock.On("UpdateSubCategory", body).Return(v.MockReturnError)
 		s.T().Run(v.Name, func(t *testing.T) {

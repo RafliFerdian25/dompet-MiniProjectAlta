@@ -13,7 +13,7 @@ import (
 
 type suiteSubCategory struct {
 	suite.Suite
-	subCategoryService     *subCategoryService
+	subCategoryService     SubCategoryService
 	subCategoryMock *subCategoryMockRepository.SubCategoryMock
 }
 
@@ -22,12 +22,12 @@ func (s *suiteSubCategory) SetupSuite() {
 	s.subCategoryMock = subCategoryMock
 
 	// panggil new
-	s.subCategoryService = &subCategoryService{
-		subCategoryRepository: s.subCategoryMock,
-	}
+	NewSubCategoryService := NewSubCategoryService(s.subCategoryMock)
+	s.subCategoryService = NewSubCategoryService
 }
 
 func (s *suiteSubCategory) TestGetSubCategoryByUser() {
+	UserID := uint(1)
 	testCase := []struct {
 		Name            string
 		MockReturnError error
@@ -42,7 +42,7 @@ func (s *suiteSubCategory) TestGetSubCategoryByUser() {
 			[]dto.SubCategoryDTO{
 				{
 					ID:      1,
-					UserID:  1,
+					UserID:  &UserID,
 					CategoryID: 1,
 					Name:    "test",
 				},
@@ -52,7 +52,7 @@ func (s *suiteSubCategory) TestGetSubCategoryByUser() {
 			[]dto.SubCategoryDTO{
 				{
 					ID:      1,
-					UserID:  1,
+					UserID:  &UserID,
 					CategoryID: 1,
 					Name:    "test",
 				},
@@ -86,6 +86,7 @@ func (s *suiteSubCategory) TestGetSubCategoryByUser() {
 }
 
 func (s *suiteSubCategory) TestCreateSubCategory() {
+	UserID := uint(1)
 	testCase := []struct {
 		Name            string
 		MockReturnError error
@@ -97,7 +98,7 @@ func (s *suiteSubCategory) TestCreateSubCategory() {
 			"success",
 			nil,
 			dto.SubCategoryDTO{
-					UserID:  1,
+					UserID:  &UserID,
 					CategoryID: 1,
 					Name:    "test",
 			},
@@ -108,7 +109,7 @@ func (s *suiteSubCategory) TestCreateSubCategory() {
 			"failed create account",
 			errors.New("error"),
 			dto.SubCategoryDTO{
-				UserID:  1,
+				UserID:  &UserID,
 				CategoryID: 1,
 				Name:    "test",
 			},
@@ -134,6 +135,7 @@ func (s *suiteSubCategory) TestCreateSubCategory() {
 }
 
 func (s *suiteSubCategory) TestDeleteSubCategory() {
+	UserID := uint(1)
 	testCase := []struct {
 		Name                  string
 		GetMockReturnError    error
@@ -149,7 +151,7 @@ func (s *suiteSubCategory) TestDeleteSubCategory() {
 			nil,
 			dto.SubCategoryDTO{
 				ID: 	1,
-				UserID:  1,
+				UserID:  &UserID,
 				CategoryID: 1,
 				Name:    "test",
 			},
@@ -174,7 +176,7 @@ func (s *suiteSubCategory) TestDeleteSubCategory() {
 			nil,
 			dto.SubCategoryDTO{
 				ID: 	1,
-				UserID:  1,
+				UserID:  &UserID,
 				CategoryID: 1,
 				Name:    "test",},
 			nil,
@@ -188,7 +190,7 @@ func (s *suiteSubCategory) TestDeleteSubCategory() {
 			nil,
 			dto.SubCategoryDTO{
 				ID: 	1,
-				UserID:  1,
+				UserID:  &UserID,
 				CategoryID: 1,
 				Name:    "test",
 			},
@@ -220,6 +222,9 @@ func (s *suiteSubCategory) TestDeleteSubCategory() {
 }
 
 func (s *suiteSubCategory) TestUpdateSubCategory() {
+	UserID1 := uint(1)
+	UserID2 := uint(2)
+
 	testCase := []struct {
 		Name                  string
 		GetMockReturnError    error
@@ -235,14 +240,14 @@ func (s *suiteSubCategory) TestUpdateSubCategory() {
 			dto.SubCategoryDTO{
 				ID:      1,
 				CategoryID: 1,
-				UserID:  1,
+				UserID:  &UserID1,
 				Name:    "test",
 			},
 			nil,
 			dto.SubCategoryDTO{
 				ID:     1,
 				CategoryID: 1,
-				UserID: 1,
+				UserID: &UserID1,
 				Name:   "Salary",
 			},
 			false,
@@ -256,7 +261,7 @@ func (s *suiteSubCategory) TestUpdateSubCategory() {
 			dto.SubCategoryDTO{
 				ID:     1,
 				CategoryID: 1,
-				UserID: 1,
+				UserID: &UserID1,
 				Name:   "Salary",
 			},
 			true,
@@ -268,14 +273,14 @@ func (s *suiteSubCategory) TestUpdateSubCategory() {
 			dto.SubCategoryDTO{
 				ID:      1,
 				CategoryID: 1,
-				UserID:  2,
+				UserID:  &UserID2,
 				Name:    "test",
 			},
 			nil,
 			dto.SubCategoryDTO{
 				ID:     1,
 				CategoryID: 1,
-				UserID: 1,
+				UserID: &UserID1,
 				Name:   "Salary",
 			},
 			true,
@@ -287,14 +292,14 @@ func (s *suiteSubCategory) TestUpdateSubCategory() {
 			dto.SubCategoryDTO{
 				ID:      1,
 				CategoryID: 1,
-				UserID:  1,
+				UserID:  &UserID1,
 				Name:    "test",
 			},
 			gorm.ErrRecordNotFound,
 			dto.SubCategoryDTO{
 				ID:     1,
 				CategoryID: 1,
-				UserID: 1,
+				UserID: &UserID1,
 				Name:   "Salary",
 			},
 			true,

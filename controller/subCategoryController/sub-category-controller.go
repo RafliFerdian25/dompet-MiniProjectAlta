@@ -37,7 +37,7 @@ func (sc *SubCategoryController) CreateSubCategory(c echo.Context) error {
 
 	// Get user id from jwt
 	userId, _ := helper.GetJwt(c)
-	subCategory.UserID = userId
+	subCategory.UserID = &userId
 
 	// Call service to create sub category
 	err = sc.SubCategoryService.CreateSubCategory(subCategory)
@@ -150,7 +150,7 @@ func (sc *SubCategoryController) UpdateSubCategory(c echo.Context) error {
 	
 	// Get user id from jwt
 	userId, _ := helper.GetJwt(c)
-	subCategory.UserID = userId
+	subCategory.UserID = &userId
 
 	// Call service to update sub category
 	err = sc.SubCategoryService.UpdateSubCategory(subCategory)

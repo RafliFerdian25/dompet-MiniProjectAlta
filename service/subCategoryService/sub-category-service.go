@@ -43,7 +43,7 @@ func (sc *subCategoryService) DeleteSubCategory(id uint, userId uint) error {
 		return err
 	}
 	// check if user id in the subcategory is the same as the user id in the token
-	if subCategory.UserID != userId {
+	if *subCategory.UserID != userId {
 		return errors.New(constantError.ErrorNotAuthorized)
 	}
 	err = sc.subCategoryRepository.DeleteSubCategory(id)

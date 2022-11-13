@@ -42,7 +42,7 @@ func (s *subCategoryRepository) CreateSubCategory(subCategory dto.SubCategoryDTO
 	// create new subcategory
 	err := s.db.Model(&model.SubCategory{}).Create(&model.SubCategory{
 		CategoryID: subCategory.CategoryID,
-		UserID:     subCategory.UserID,
+		UserID:     *subCategory.UserID,
 		Name:       subCategory.Name,
 	}).Error
 	if err != nil {
