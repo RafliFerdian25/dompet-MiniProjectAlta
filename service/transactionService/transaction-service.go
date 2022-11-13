@@ -89,7 +89,7 @@ func (ts *transactionService) UpdateTransaction(newTransaction dto.TransactionDT
 			return err
 		}
 		// check if user id in the subcategory is the same as the user id in the transaction
-		if newSubCategory.UserID != userID && newSubCategory.UserID != 0 {
+		if *newSubCategory.UserID != userID && *newSubCategory.UserID != 0 {
 			return errors.New(constantError.ErrorNotAuthorized)
 		}
 	}
@@ -160,7 +160,7 @@ func (ts *transactionService) CreateTransaction(transaction dto.TransactionDTO) 
 		return err
 	}
 	// check if user id in the subcategory is the same as the user id in the transaction
-	if subCategory.UserID != transaction.UserID && subCategory.UserID != 0 {
+	if *subCategory.UserID != transaction.UserID && *subCategory.UserID != 0 {
 		return errors.New(constantError.ErrorNotAuthorized)
 	}
 

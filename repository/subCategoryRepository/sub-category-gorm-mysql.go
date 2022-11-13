@@ -42,7 +42,7 @@ func (s *subCategoryRepository) CreateSubCategory(subCategory dto.SubCategoryDTO
 	// create new subcategory
 	err := s.db.Model(&model.SubCategory{}).Create(&model.SubCategory{
 		CategoryID: subCategory.CategoryID,
-		UserID:     subCategory.UserID,
+		UserID:     *subCategory.UserID,
 		Name:       subCategory.Name,
 	}).Error
 	if err != nil {
@@ -82,7 +82,7 @@ func (sc *subCategoryRepository) UpdateSubCategory(subCategory dto.SubCategoryDT
 	return nil
 }
 
-func NewCategoryRepository(db *gorm.DB) SubCategoryRepository {
+func NewSubCategoryRepository(db *gorm.DB) SubCategoryRepository {
 	return &subCategoryRepository{
 		db: db,
 	}

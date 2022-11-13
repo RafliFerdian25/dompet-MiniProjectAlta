@@ -7,6 +7,7 @@ import (
 	reportMockService "dompet-miniprojectalta/service/reportService/reportMock"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -33,15 +34,16 @@ func (s *suiteReport) SetupTest() {
 
 func (s *suiteReport) TestGetCashflow() {
 	// Setup
+	monthPeriod := "november 2022"
 	testCase := []struct {
 		Name               string
 		Method             string
 		userId             uint
 		ParamPeriod        string
-		MockReturnBody     map[string]int64
+		MockReturnBody     map[string]interface{}
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       map[string]int64
+		ExpectedBody       map[string]interface{}
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -50,17 +52,35 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"month",
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
+			map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(20000),
+				},
+				"total_expense": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(-10000),
+				},
+				"cashflow": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(10000),
+				},
 			},
 			nil,
 			true,
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
+			map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(20000),
+				},
+				"total_expense": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(-10000),
+				},
+				"cashflow": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(10000),
+				},
 			},
 			http.StatusOK,
 			"success get cashflow",
@@ -70,38 +90,22 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"year",
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			nil,
 			false,
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			http.StatusBadRequest,
 			"fail get period",
 		},
 		{
-			"fail get cashflow",
+			"error auth",
 			"GET",
 			1,
 			"month",
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			errors.New(constantError.ErrorNotAuthorized),
 			false,
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			http.StatusUnauthorized,
 			"fail get cashflow",
 		},
@@ -110,18 +114,10 @@ func (s *suiteReport) TestGetCashflow() {
 			"GET",
 			1,
 			"month",
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			errors.New("error"),
 			false,
-			map[string]int64{
-				"total_income_45_2022":  1000000,
-				"total_expense_45_2022": 1000000,
-				"cashflow_45_2022":      1000000,
-			},
+			map[string]interface{}{},
 			http.StatusInternalServerError,
 			"fail get cashflow",
 		},
@@ -151,7 +147,9 @@ func (s *suiteReport) TestGetCashflow() {
 
 			s.Equal(v.ExpectedMesaage, resp["message"])
 			if v.HasReturnBody {
-				s.Equal(v.ExpectedBody["total_income_45_2022"], int64(resp["data"].(map[string]interface{})["total_income_45_2022"].(float64)))
+				s.Equal(v.ExpectedBody["total_income"].(map[string]interface{})["total"], int64(resp["data"].(map[string]interface{})["total_income"].(map[string]interface{})["total"].(float64)))
+				s.Equal(v.ExpectedBody["total_expense"].(map[string]interface{})["total"], int64(resp["data"].(map[string]interface{})["total_expense"].(map[string]interface{})["total"].(float64)))
+				s.Equal(v.ExpectedBody["cashflow"].(map[string]interface{})["total"], int64(resp["data"].(map[string]interface{})["cashflow"].(map[string]interface{})["total"].(float64)))
 			}
 		})
 		// remove mock
@@ -191,7 +189,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_expense_month_11": float64(1000000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "test",
@@ -200,7 +202,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_income_month_11": float64(1000000),
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 			},
 			nil,
 			true,
@@ -213,7 +219,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_expense_month_11": float64(1000000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "test",
@@ -222,7 +232,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_income_month_11": float64(1000000),
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total": float64(1000000),
+				},
 			},
 			http.StatusOK,
 			"success get report by category",
@@ -243,7 +257,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_expense_month_11": float64(1000000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "test",
@@ -252,7 +270,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_income_month_11": float64(1000000),
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total": float64(1000000),
+				},
 			},
 			nil,
 			true,
@@ -265,7 +287,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_expense_month_11": float64(1000000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total":  float64(1000000),
+				},
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "test",
@@ -274,7 +300,11 @@ func (s *suiteReport) TestGetReportbyCategory() {
 						Persentage:  float64(50),
 					},
 				},
-				"total_income_month_11": float64(1000000),
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": 11,
+					"total": float64(1000000),
+				},
 			},
 			http.StatusOK,
 			"success get report by category",
@@ -391,9 +421,9 @@ func (s *suiteReport) TestGetReportbyCategory() {
 			s.Equal(v.ExpectedMesaage, resp["message"])
 			if v.HasReturnBody {
 				s.Equal(v.ExpectedBody["expense_by_category"].([]dto.ReportSpendingCategoryPeriod)[0].Total, int64(resp["data"].(map[string]interface{})["expense_by_category"].([]interface{})[0].(map[string]interface{})["total"].(float64)))
-				s.Equal(v.ExpectedBody["total_expense_month_11"], resp["data"].(map[string]interface{})["total_expense_month_11"])
+				s.Equal(v.ExpectedBody["total_expense"].(map[string]interface{})["total"], resp["data"].(map[string]interface{})["total_expense"].(map[string]interface{})["total"])
 				s.Equal(v.ExpectedBody["income_by_category"].([]dto.ReportSpendingCategoryPeriod)[0].Total, int64(resp["data"].(map[string]interface{})["income_by_category"].([]interface{})[0].(map[string]interface{})["total"].(float64)))
-				s.Equal(v.ExpectedBody["total_income_month_11"], resp["data"].(map[string]interface{})["total_income_month_11"])
+				s.Equal(v.ExpectedBody["total_income"].(map[string]interface{})["total"], resp["data"].(map[string]interface{})["total_income"].(map[string]interface{})["total"])
 			}
 		})
 		// remove mock
@@ -433,9 +463,20 @@ func (s *suiteReport) TestGetAnalyticPeriod() {
 						Total:  100000,
 					},
 				},
-				"net_income_november_2022" : 50000,
-				"comparison_expense_november_2022_and_october_2022" : "0%",
-				"comparison_income_november_2022_and_october_2022" : "0%",
+				"net_income" : map[string]interface{}{
+					"period": "november 2022",
+					"result": 50000,
+				},
+				"comparison_expense": map[string]interface{}{
+					"period_after":  "november 2022",
+					"period_before": "october 2022",
+					"result":        "-50%",
+				},
+				"comparison_income": map[string]interface{}{
+					"period_after":  "november 2022",
+					"period_before": "october 2022",
+					"result":        "-50%",
+				},
 			},
 			nil,
 			true,
@@ -452,9 +493,20 @@ func (s *suiteReport) TestGetAnalyticPeriod() {
 						Total:  100000,
 					},
 				},
-				"net_income_november_2022" : 50000,
-				"comparison_expense_november_2022_and_october_2022" : "0%",
-				"comparison_income_november_2022_and_october_2022" : "0%",
+				"net_income" : map[string]interface{}{
+					"period": "november 2022",
+					"result": 50000,
+				},
+				"comparison_expense": map[string]interface{}{
+					"period_after":  "november 2022",
+					"period_before": "october 2022",
+					"result":        "-50%",
+				},
+				"comparison_income": map[string]interface{}{
+					"period_after":  "november 2022",
+					"period_before": "october 2022",
+					"result":        "-50%",
+				},
 			},
 			http.StatusOK,
 			"success get report month",
@@ -521,11 +573,12 @@ func (s *suiteReport) TestGetAnalyticPeriod() {
 
 			s.Equal(v.ExpectedMesaage, resp["message"])
 			if v.HasReturnBody {
+				fmt.Println(v.ExpectedBody["net_income"].(map[string]interface{})["result"])
 				s.Equal(v.ExpectedBody["expense_period"].([]dto.TransactionReportPeriod)[0].Total, int64(resp["data"].(map[string]interface{})["expense_period"].([]interface{})[0].(map[string]interface{})["total"].(float64)))
 				s.Equal(v.ExpectedBody["income_period"].([]dto.TransactionReportPeriod)[0].Total, int64(resp["data"].(map[string]interface{})["income_period"].([]interface{})[0].(map[string]interface{})["total"].(float64)))
-				s.Equal(v.ExpectedBody["net_income_november_2022"], int(resp["data"].(map[string]interface{})["net_income_november_2022"].(float64)))
-				s.Equal(v.ExpectedBody["comparison_expense_november_2022_and_october_2022"], resp["data"].(map[string]interface{})["comparison_expense_november_2022_and_october_2022"])
-				s.Equal(v.ExpectedBody["comparison_income_november_2022_and_october_2022"], resp["data"].(map[string]interface{})["comparison_income_november_2022_and_october_2022"])
+				s.Equal(v.ExpectedBody["net_income"].(map[string]interface{})["result"], int(resp["data"].(map[string]interface{})["net_income"].(map[string]interface{})["result"].(float64)))
+				s.Equal(v.ExpectedBody["comparison_expense"].(map[string]interface{})["result"], resp["data"].(map[string]interface{})["comparison_expense"].(map[string]interface{})["result"])
+				s.Equal(v.ExpectedBody["comparison_income"].(map[string]interface{})["result"], resp["data"].(map[string]interface{})["comparison_income"].(map[string]interface{})["result"])
 			}
 		})
 		// remove mock

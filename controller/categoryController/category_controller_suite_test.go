@@ -3,7 +3,7 @@ package categoryController
 import (
 	"dompet-miniprojectalta/constant/constantError"
 	"dompet-miniprojectalta/helper"
-	"dompet-miniprojectalta/models/model"
+	"dompet-miniprojectalta/models/dto"
 	categoryMockService "dompet-miniprojectalta/service/categoryService/categoryMock"
 	"encoding/json"
 	"errors"
@@ -15,13 +15,12 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
-	"gorm.io/gorm"
 )
 
 type suiteCategory struct {
 	suite.Suite
 	categoryController *CategoryController
-	mock *categoryMockService.CategoryMock
+	mock               *categoryMockService.CategoryMock
 }
 
 func (s *suiteCategory) SetupTest() {
@@ -36,11 +35,11 @@ func (s *suiteCategory) TestGetCategoryByID() {
 	testCase := []struct {
 		Name               string
 		Method             string
-		ParamID             string
-		MockReturnBody     model.Category
+		ParamID            string
+		MockReturnBody     dto.Category
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       model.Category
+		ExpectedBody       dto.Category
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -48,21 +47,19 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"success get category by id",
 			"GET",
 			"1",
-			model.Category{
-				
-					Model:   gorm.Model{ID: 1},
-					Name: "test",
-					SubCategories: []model.SubCategory{},
-				
+			dto.Category{
+
+				ID:            1,
+				Name:          "test",
+				SubCategories: []dto.SubCategory{},
 			},
 			nil,
 			true,
-			model.Category{
-				
-					Model:   gorm.Model{ID: 1},
-					Name: "test",
-					SubCategories: []model.SubCategory{},
-				
+			dto.Category{
+
+				ID:            1,
+				Name:          "test",
+				SubCategories: []dto.SubCategory{},
 			},
 			http.StatusOK,
 			"success get category by id",
@@ -71,10 +68,10 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"fail get id",
 			"GET",
 			"w",
-			model.Category{},
+			dto.Category{},
 			nil,
 			false,
-			model.Category{},
+			dto.Category{},
 			http.StatusBadRequest,
 			"fail get id",
 		},
@@ -82,15 +79,14 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"fail get category by id",
 			"GET",
 			"1",
-			model.Category{},
+			dto.Category{},
 			errors.New(constantError.ErrorNotAuthorized),
 			false,
-			model.Category{
-				
-					Model:   gorm.Model{ID: 1},
-					Name: "test",
-					SubCategories: []model.SubCategory{},
-				
+			dto.Category{
+
+				ID:            1,
+				Name:          "test",
+				SubCategories: []dto.SubCategory{},
 			},
 			http.StatusUnauthorized,
 			"fail get category by id",
@@ -99,15 +95,14 @@ func (s *suiteCategory) TestGetCategoryByID() {
 			"fail get category by id",
 			"GET",
 			"1",
-			model.Category{},
+			dto.Category{},
 			errors.New("error"),
 			false,
-			model.Category{
-				
-					Model:   gorm.Model{ID: 1},
-					Name: "test",
-					SubCategories: []model.SubCategory{},
-				
+			dto.Category{
+
+				ID:            1,
+				Name:          "test",
+				SubCategories: []dto.SubCategory{},
 			},
 			http.StatusInternalServerError,
 			"fail get category by id",
@@ -154,40 +149,40 @@ func (s *suiteCategory) TestGetAllCategory() {
 	testCase := []struct {
 		Name               string
 		Method             string
-		MockReturnBody     []model.Category
+		MockReturnBody     []dto.Category
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       []model.Category
+		ExpectedBody       []dto.Category
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
 		{
 			"success get category",
 			"GET",
-			[]model.Category{
+			[]dto.Category{
 				{
-					Model:   gorm.Model{ID: 1},
-					Name: "test",
-					SubCategories: []model.SubCategory{},
+					ID:            1,
+					Name:          "test",
+					SubCategories: []dto.SubCategory{},
 				},
 				{
-					Model:   gorm.Model{ID: 2},
-					Name: "test2",
-					SubCategories: []model.SubCategory{},
+					ID:            2,
+					Name:          "test2",
+					SubCategories: []dto.SubCategory{},
 				},
 			},
 			nil,
 			true,
-			[]model.Category{
+			[]dto.Category{
 				{
-					Model:   gorm.Model{ID: 1},
-					Name: "test",
-					SubCategories: []model.SubCategory{},
+					ID:            1,
+					Name:          "test",
+					SubCategories: []dto.SubCategory{},
 				},
 				{
-					Model:   gorm.Model{ID: 2},
-					Name: "test2",
-					SubCategories: []model.SubCategory{},
+					ID:            2,
+					Name:          "test2",
+					SubCategories: []dto.SubCategory{},
 				},
 			},
 			http.StatusOK,
@@ -196,19 +191,19 @@ func (s *suiteCategory) TestGetAllCategory() {
 		{
 			"fail get all category",
 			"GET",
-			[]model.Category{},
+			[]dto.Category{},
 			errors.New(constantError.ErrorNotAuthorized),
 			false,
-			[]model.Category{
+			[]dto.Category{
 				{
-					Model:   gorm.Model{ID: 1},
-					Name: "test",
-					SubCategories: []model.SubCategory{},
+					ID:            1,
+					Name:          "test",
+					SubCategories: []dto.SubCategory{},
 				},
 				{
-					Model:   gorm.Model{ID: 2},
-					Name: "test2",
-					SubCategories: []model.SubCategory{},
+					ID:            2,
+					Name:          "test2",
+					SubCategories: []dto.SubCategory{},
 				},
 			},
 			http.StatusUnauthorized,
@@ -217,19 +212,19 @@ func (s *suiteCategory) TestGetAllCategory() {
 		{
 			"fail get all category",
 			"GET",
-			[]model.Category{},
+			[]dto.Category{},
 			errors.New("error"),
 			false,
-			[]model.Category{
+			[]dto.Category{
 				{
-					Model:   gorm.Model{ID: 1},
-					Name: "test",
-					SubCategories: []model.SubCategory{},
+					ID:            1,
+					Name:          "test",
+					SubCategories: []dto.SubCategory{},
 				},
 				{
-					Model:   gorm.Model{ID: 2},
-					Name: "test2",
-					SubCategories: []model.SubCategory{},
+					ID:            2,
+					Name:          "test2",
+					SubCategories: []dto.SubCategory{},
 				},
 			},
 			http.StatusInternalServerError,

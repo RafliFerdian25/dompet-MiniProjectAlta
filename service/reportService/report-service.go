@@ -12,7 +12,7 @@ import (
 )
 
 type ReportService interface {
-	GetCashflow(userId uint, period string) (map[string]int64, error)
+	GetCashflow(userId uint, period string) (map[string]interface{}, error)
 	GetReportbyCategory(userId uint, period string, numberPeriod int) (map[string]interface{}, error)
 	GetAnalyticPeriod(userId uint, period string) (map[string]interface{}, error)
 }
@@ -22,12 +22,12 @@ type reportService struct {
 }
 
 // GetCashflow implements ReportService
-func (rs *reportService) GetCashflow(userId uint, period string) (map[string]int64, error) {
+func (rs *reportService) GetCashflow(userId uint, period string) (map[string]interface{}, error) {
 	// check if period is month or week
 	if period == "month" {
-		period = "%M_%Y"
+		period = "%M %Y"
 	} else if period == "week" {
-		period = "%v_%x"
+		period = "%v %x"
 	} else {
 		return nil, errors.New(constantError.ErrorInvalidPeriod)
 	}
@@ -44,7 +44,7 @@ func (rs *reportService) GetCashflow(userId uint, period string) (map[string]int
 	// check if ExpenseTransactionByPeriod is empty
 	if len(ExpenseTransactionByPeriod) == 0 {
 		ExpenseTransactionByPeriod = append(ExpenseTransactionByPeriod, dto.TransactionReportPeriod{
-			Period: "No_Data",
+			Period: "No data",
 			Total:  0,
 		})
 	}
@@ -58,7 +58,7 @@ func (rs *reportService) GetCashflow(userId uint, period string) (map[string]int
 	// check if IncomeTransactionByPeriod is empty
 	if len(IncomeTransactionByPeriod) == 0 {
 		IncomeTransactionByPeriod = append(IncomeTransactionByPeriod, dto.TransactionReportPeriod{
-			Period: "No_Data",
+			Period: "No data",
 			Total:  0,
 		})
 	}
@@ -70,10 +70,19 @@ func (rs *reportService) GetCashflow(userId uint, period string) (map[string]int
 	// calculate cashflow
 	cashflow := totalIncome + totalExpense
 
-	data := map[string]int64{
-		"total_income_" + strings.ToLower(IncomeTransactionByPeriod[0].Period):  totalIncome,
-		"total_expense_" + strings.ToLower(ExpenseTransactionByPeriod[0].Period): totalExpense,
-		"cashflow_"+ strings.ToLower(ExpenseTransactionByPeriod[0].Period):      cashflow,
+	data := map[string]interface{}{
+		"total_income": map[string]interface{}{
+			"period": strings.ToLower(IncomeTransactionByPeriod[0].Period),
+			"total": totalIncome,
+		},
+		"total_expense": map[string]interface{}{
+			"period": strings.ToLower(ExpenseTransactionByPeriod[0].Period),
+			"total": totalExpense,
+		},
+		"cashflow": map[string]interface{}{
+			"period": strings.ToLower(ExpenseTransactionByPeriod[0].Period),
+			"total": cashflow,
+		},
 	}
 	return data, nil
 }
@@ -132,9 +141,17 @@ func (rs *reportService) GetReportbyCategory(userId uint, period string, numberP
 
 	data := map[string]interface{}{
 		"expense_by_category": expenseByCategory,
-		"total_expense_" + periodData["period"].(string) + "_" + strconv.Itoa(periodData["numberPeriod"].(int)): totalExpense,
+		"total_expense": map[string]interface{}{
+			"period": periodData["period"].(string),
+			"number": periodData["numberPeriod"].(int),
+			"total":  totalExpense,
+		},
 		"income_by_category": incomeByCategory,
-		"total_income_" + periodData["period"].(string) + "_" + strconv.Itoa(periodData["numberPeriod"].(int)): totalIncome,
+		"total_income": map[string]interface{}{
+			"period": periodData["period"].(string),
+			"number": periodData["numberPeriod"].(int),
+			"total":  totalIncome,
+		},
 	}
 	return data, nil
 }
@@ -143,9 +160,9 @@ func (rs *reportService) GetReportbyCategory(userId uint, period string, numberP
 func (rs *reportService) GetAnalyticPeriod(userId uint, period string) (map[string]interface{}, error) {
 	// check if period is month or week
 	if period == "month" {
-		period = "%M_%Y"
+		period = "%M %Y"
 	} else if period == "week" {
-		period = "%v_%x"
+		period = "%v %x"
 	} else {
 		return nil, errors.New(constantError.ErrorInvalidPeriod)
 	}
@@ -162,7 +179,7 @@ func (rs *reportService) GetAnalyticPeriod(userId uint, period string) (map[stri
 	// check if expensePeriod is empty
 	if len(expensePeriod) == 0 {
 		expensePeriod = append(expensePeriod, dto.TransactionReportPeriod{
-			Period: "No_Data",
+			Period: "No Data",
 			Total:  0,
 		})
 	}
@@ -176,7 +193,7 @@ func (rs *reportService) GetAnalyticPeriod(userId uint, period string) (map[stri
 	// check if incomePeriod is empty
 	if len(incomePeriod) == 0 {
 		incomePeriod = append(incomePeriod, dto.TransactionReportPeriod{
-			Period: "No_Data",
+			Period: "No Data",
 			Total:  0,
 		})
 	}
@@ -192,7 +209,7 @@ func (rs *reportService) GetAnalyticPeriod(userId uint, period string) (map[stri
 	// check if len expensePeriod is 1
 	if len(expensePeriod) == 1 {
 		expensePeriod = append(expensePeriod, dto.TransactionReportPeriod{
-			Period: "No_Data",
+			Period: "No Data",
 			Total:  0,
 		})
 	}
@@ -200,7 +217,7 @@ func (rs *reportService) GetAnalyticPeriod(userId uint, period string) (map[stri
 	// check if len incomePeriod is 1
 	if len(incomePeriod) == 1 {
 		incomePeriod = append(incomePeriod, dto.TransactionReportPeriod{
-			Period: "No_Data",
+			Period: "No Data",
 			Total:  0,
 		})
 	}
@@ -232,9 +249,20 @@ func (rs *reportService) GetAnalyticPeriod(userId uint, period string) (map[stri
 	data := map[string]interface{}{
 		"expense_period":                       expensePeriod,
 		"income_period":                        incomePeriod,
-		"net_income_" + strings.ToLower(incomePeriod[0].Period): netIncome,
-		"comparison_expense_" + strings.ToLower(expensePeriod[0].Period) + "_and_" + strings.ToLower(expensePeriod[1].Period): compareExpenseString + "%",
-		"comparison_income_" + strings.ToLower(incomePeriod[0].Period) + "_and_" + strings.ToLower(incomePeriod[1].Period):    compareIncomeString + "%",
+		"net_income": map[string]interface{}{
+			"period": strings.ToLower(incomePeriod[0].Period),
+			"result": netIncome,
+		},
+		"comparison_expense" : map[string]interface{}{
+			"period_after": strings.ToLower(expensePeriod[0].Period),
+			"period_before": strings.ToLower(expensePeriod[1].Period),
+			"result": compareExpenseString + "%",
+		},
+		"comparison_income": map[string]interface{}{
+			"period_after": strings.ToLower(incomePeriod[0].Period),
+			"period_before": strings.ToLower(incomePeriod[1].Period),
+			"result":  compareIncomeString + "%",
+		},  
 	}
 
 	return data, nil

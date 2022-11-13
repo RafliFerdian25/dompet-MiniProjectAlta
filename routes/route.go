@@ -42,7 +42,7 @@ func New(db *gorm.DB) *echo.Echo {
 	// Repositories
 	userRepository := userRepository.NewUserRepository(db)
 	categoryRepository := categoryRepository.NewCategoryRepository(db)
-	subcategoryRepository := subCategoryRepository.NewCategoryRepository(db)
+	subcategoryRepository := subCategoryRepository.NewSubCategoryRepository(db)
 	accountRepository := accountRepository.NewAccountRepository(db)
 	transactionRepository := transactionRepository.NewTransactionRepository(db)
 	debtRepository := debtRepository.NewDebtRepository(db)

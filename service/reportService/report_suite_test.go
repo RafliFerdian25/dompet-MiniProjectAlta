@@ -41,7 +41,7 @@ func (s *suiteReports) TestGetCashflow() {
 		ParamUserId            uint
 		ParamPeriod            string
 		HasReturnBody          bool
-		ExpectedBody           map[string]int64
+		ExpectedBody           map[string]interface{}
 		ExpectedError          error
 	}{
 		{
@@ -63,10 +63,19 @@ func (s *suiteReports) TestGetCashflow() {
 			ParamUserId:   1,
 			ParamPeriod:   "month",
 			HasReturnBody: true,
-			ExpectedBody: map[string]int64{
-				"total_income_" + monthPeriod:  20000,
-				"total_expense_" + monthPeriod: -10000,
-				"cashflow_" + monthPeriod:      10000,
+			ExpectedBody: map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(20000),
+				},
+				"total_expense": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(-10000),
+				},
+				"cashflow": map[string]interface{}{
+					"period": monthPeriod,
+					"total": int64(10000),
+				},
 			},
 			ExpectedError: nil,
 		},
@@ -89,10 +98,19 @@ func (s *suiteReports) TestGetCashflow() {
 			ParamUserId:   1,
 			ParamPeriod:   "week",
 			HasReturnBody: true,
-			ExpectedBody: map[string]int64{
-				"total_income_" + weekPeriod:  20000,
-				"total_expense_" + weekPeriod: -10000,
-				"cashflow_" + weekPeriod:      10000,
+			ExpectedBody: map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(20000),
+				},
+				"total_expense": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(-10000),
+				},
+				"cashflow": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(10000),
+				},
 			},
 			ExpectedError: nil,
 		},
@@ -105,10 +123,19 @@ func (s *suiteReports) TestGetCashflow() {
 			ParamUserId:            1,
 			ParamPeriod:            "year",
 			HasReturnBody:          false,
-			ExpectedBody: map[string]int64{
-				"total_income_" + weekPeriod:  20000,
-				"total_expense_" + weekPeriod: -10000,
-				"cashflow_" + weekPeriod:      10000,
+			ExpectedBody: map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(20000),
+				},
+				"total_expense": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(-10000),
+				},
+				"cashflow": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(10000),
+				},
 			},
 			ExpectedError: errors.New(constantError.ErrorInvalidPeriod),
 		},
@@ -121,10 +148,19 @@ func (s *suiteReports) TestGetCashflow() {
 			ParamUserId:            1,
 			ParamPeriod:            "month",
 			HasReturnBody:          false,
-			ExpectedBody: map[string]int64{
-				"total_income_" + weekPeriod:  20000,
-				"total_expense_" + weekPeriod: -10000,
-				"cashflow_" + weekPeriod:      10000,
+			ExpectedBody: map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(20000),
+				},
+				"total_expense": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(-10000),
+				},
+				"cashflow": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(10000),
+				},
 			},
 			ExpectedError: errors.New("error"),
 		},
@@ -137,10 +173,19 @@ func (s *suiteReports) TestGetCashflow() {
 			ParamUserId:            1,
 			ParamPeriod:            "month",
 			HasReturnBody:          false,
-			ExpectedBody: map[string]int64{
-				"total_income_" + weekPeriod:  20000,
-				"total_expense_" + weekPeriod: -10000,
-				"cashflow_" + weekPeriod:      10000,
+			ExpectedBody: map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(20000),
+				},
+				"total_expense": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(-10000),
+				},
+				"cashflow": map[string]interface{}{
+					"period": weekPeriod,
+					"total": int64(10000),
+				},
 			},
 			ExpectedError: errors.New("error"),
 		},
@@ -153,10 +198,19 @@ func (s *suiteReports) TestGetCashflow() {
 			ParamUserId:            1,
 			ParamPeriod:            "month",
 			HasReturnBody:          true,
-			ExpectedBody: map[string]int64{
-				"total_income_no_data":  0,
-				"total_expense_no_data": 0,
-				"cashflow_no_data":      0,
+			ExpectedBody: map[string]interface{}{
+				"total_income": map[string]interface{}{
+					"period": "no data",
+					"total": int64(0),
+				},
+				"total_expense": map[string]interface{}{
+					"period": "no data",
+					"total": int64(0),
+				},
+				"cashflow": map[string]interface{}{
+					"period": "no data",
+					"total": int64(0),
+				},
 			},
 			ExpectedError: nil,
 		},
@@ -168,9 +222,9 @@ func (s *suiteReports) TestGetCashflow() {
 		limit := 1
 		var period string
 		if v.ParamPeriod == "month" {
-			period = "%M_%Y"
+			period = "%M %Y"
 		} else if v.ParamPeriod == "week" {
-			period = "%v_%x"
+			period = "%v %x"
 		}
 		var mockCallExpense = s.reportMock.On("GetTransactionPeriod", v.ParamUserId, period, categoryExpense, limit).Return(v.MockReturnBodyExpense, v.MockReturnErrorExpense)
 		var mockCallIncome = s.reportMock.On("GetTransactionPeriod", v.ParamUserId, period, categoryIncome, limit).Return(v.MockReturnBodyIncome, v.MockReturnErrorIncome)
@@ -191,10 +245,10 @@ func (s *suiteReports) TestGetCashflow() {
 }
 
 func (s *suiteReports) TestGetReportbyCategory() {
-	_, month, _ := time.Now().Date()
-	monthPeriod := strconv.Itoa(int(month))
-	_, week := time.Now().ISOWeek()
-	weekPeriod := strconv.Itoa(week)
+	_, monthPeriodInt, _ := time.Now().Date()
+	monthPeriodString := strconv.Itoa(int(monthPeriodInt))
+	_, weekPeriodInt := time.Now().ISOWeek()
+	weekPeriodString := strconv.Itoa(weekPeriodInt)
 	testCase := []struct {
 		Name                   string
 		MockReturnErrorExpense error
@@ -214,7 +268,7 @@ func (s *suiteReports) TestGetReportbyCategory() {
 			MockReturnBodyExpense: []dto.ReportSpendingCategoryPeriod{
 				{
 					SubCategory: "Entainment",
-					Period:      monthPeriod,
+					Period:      monthPeriodString,
 					Total:       -10000,
 					Persentage:  100,
 				},
@@ -223,20 +277,20 @@ func (s *suiteReports) TestGetReportbyCategory() {
 			MockReturnBodyIncome: []dto.ReportSpendingCategoryPeriod{
 				{
 					SubCategory: "Salary",
-					Period:      monthPeriod,
+					Period:      monthPeriodString,
 					Total:       10000,
 					Persentage:  100,
 				},
 			},
 			ParamUserId:       1,
 			ParamPeriod:       "month",
-			ParamNumberPeriod: int(month),
+			ParamNumberPeriod: int(monthPeriodInt),
 			HasReturnBody:     true,
 			ExpectedBody: map[string]interface{}{
 				"expense_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "Entainment",
-						Period:      monthPeriod,
+						Period:      monthPeriodString,
 						Total:       -10000,
 						Persentage:  100,
 					},
@@ -244,13 +298,21 @@ func (s *suiteReports) TestGetReportbyCategory() {
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "Salary",
-						Period:      monthPeriod,
+						Period:      monthPeriodString,
 						Total:       10000,
 						Persentage:  100,
 					},
 				},
-				"total_income_month_" + monthPeriod:  int64(10000),
-				"total_expense_month_" + monthPeriod: int64(-10000),
+				"total_expense": map[string]interface{}{
+					"period": "month",
+					"number": int(monthPeriodInt),
+					"total":  int64(-10000),
+				},
+				"total_income": map[string]interface{}{
+					"period": "month",
+					"number": int(monthPeriodInt),
+					"total":  int64(10000),
+				},
 			},
 			ExpectedError: nil,
 		},
@@ -260,7 +322,7 @@ func (s *suiteReports) TestGetReportbyCategory() {
 			MockReturnBodyExpense: []dto.ReportSpendingCategoryPeriod{
 				{
 					SubCategory: "Entainment",
-					Period:      weekPeriod,
+					Period:      weekPeriodString,
 					Total:       -10000,
 					Persentage:  100,
 				},
@@ -269,20 +331,20 @@ func (s *suiteReports) TestGetReportbyCategory() {
 			MockReturnBodyIncome: []dto.ReportSpendingCategoryPeriod{
 				{
 					SubCategory: "Salary",
-					Period:      weekPeriod,
+					Period:      weekPeriodString,
 					Total:       10000,
 					Persentage:  100,
 				},
 			},
 			ParamUserId:       1,
 			ParamPeriod:       "week",
-			ParamNumberPeriod: week,
+			ParamNumberPeriod: weekPeriodInt,
 			HasReturnBody:     true,
 			ExpectedBody: map[string]interface{}{
 				"expense_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "Entainment",
-						Period:      weekPeriod,
+						Period:      weekPeriodString,
 						Total:       -10000,
 						Persentage:  100,
 					},
@@ -290,13 +352,21 @@ func (s *suiteReports) TestGetReportbyCategory() {
 				"income_by_category": []dto.ReportSpendingCategoryPeriod{
 					{
 						SubCategory: "Salary",
-						Period:      weekPeriod,
+						Period:      weekPeriodString,
 						Total:       10000,
 						Persentage:  100,
 					},
 				},
-				"total_income_week_" + weekPeriod:  int64(10000),
-				"total_expense_week_" + weekPeriod: int64(-10000),
+				"total_expense": map[string]interface{}{
+					"period": "week",
+					"number": weekPeriodInt,
+					"total":  int64(-10000),
+				},
+				"total_income": map[string]interface{}{
+					"period": "week",
+					"number": weekPeriodInt,
+					"total":  int64(10000),
+				},
 			},
 			ExpectedError: nil,
 		},
@@ -375,11 +445,11 @@ func (s *suiteReports) TestGetReportbyCategory() {
 }
 
 func (s *suiteReports) TestGetAnalyticPeriod() {
-	monthPeriod1 := strings.ToLower(time.Month(time.Now().Month()).String()) + "_" + strconv.Itoa(time.Now().Year())
-	monthPeriod2 := strings.ToLower(time.Month(time.Now().AddDate(0, -1, 0).Month()).String()) + "_" + strconv.Itoa(time.Now().Year())
+	monthPeriod1 := strings.ToLower(time.Month(time.Now().Month()).String()) + " " + strconv.Itoa(time.Now().Year())
+	monthPeriod2 := strings.ToLower(time.Month(time.Now().AddDate(0, -1, 0).Month()).String()) + " " + strconv.Itoa(time.Now().Year())
 	_, week := time.Now().ISOWeek()
-	weekPeriod1 := strings.ToLower(strconv.Itoa(week-1)) + "_" + strconv.Itoa(time.Now().Year())
-	weekPeriod2 := strings.ToLower(strconv.Itoa(week-1)) + "_" + strconv.Itoa(time.Now().Year())
+	weekPeriod1 := strings.ToLower(strconv.Itoa(week-1)) + "" + strconv.Itoa(time.Now().Year())
+	weekPeriod2 := strings.ToLower(strconv.Itoa(week-1)) + "" + strconv.Itoa(time.Now().Year())
 	testCase := []struct {
 		Name                   string
 		MockReturnErrorExpense error
@@ -440,9 +510,20 @@ func (s *suiteReports) TestGetAnalyticPeriod() {
 						Total:  40000,
 					},
 				},
-				"net_income_" + monthPeriod1:                                  int64(10000),
-				"comparison_expense_" + monthPeriod1 + "_and_" + monthPeriod2: "-50%",
-				"comparison_income_" + monthPeriod1 + "_and_" + monthPeriod2:  "-50%",
+				"net_income": map[string]interface{}{
+					"period": monthPeriod1,
+					"result": int64(10000),
+				},
+				"comparison_expense": map[string]interface{}{
+					"period_after":  monthPeriod1,
+					"period_before": monthPeriod2,
+					"result":        "-50%",
+				},
+				"comparison_income": map[string]interface{}{
+					"period_after":  monthPeriod1,
+					"period_before": monthPeriod2,
+					"result":        "-50%",
+				},
 			},
 			ExpectedError: nil,
 		},
@@ -494,9 +575,20 @@ func (s *suiteReports) TestGetAnalyticPeriod() {
 						Total:  40000,
 					},
 				},
-				"net_income_" + weekPeriod1:                                 int64(10000),
-				"comparison_expense_" + weekPeriod1 + "_and_" + weekPeriod2: "-50%",
-				"comparison_income_" + weekPeriod1 + "_and_" + weekPeriod2:  "-50%",
+				"net_income": map[string]interface{}{
+					"period": weekPeriod1,
+					"result": int64(10000),
+				},
+				"comparison_expense": map[string]interface{}{
+					"period_after":  weekPeriod1,
+					"period_before": weekPeriod2,
+					"result":        "-50%",
+				},
+				"comparison_income": map[string]interface{}{
+					"period_after":  weekPeriod1,
+					"period_before": weekPeriod2,
+					"result":        "-50%",
+				},
 			},
 			ExpectedError: nil,
 		},
@@ -550,32 +642,43 @@ func (s *suiteReports) TestGetAnalyticPeriod() {
 			ParamUserId:           1,
 			ParamPeriod:           "month",
 			HasReturnBody:         true,
-			ExpectedBody:          map[string]interface{}{
+			ExpectedBody: map[string]interface{}{
 				"expense_period": []dto.TransactionReportPeriod{
 					{
 						Period: weekPeriod1,
 						Total:  -10000,
 					},
 					{
-						Period: "No_Data",
+						Period: "No Data",
 						Total:  0,
 					},
 				},
 				"income_period": []dto.TransactionReportPeriod{
 					{
-						Period: "No_Data",
+						Period: "No Data",
 						Total:  0,
 					},
 					{
-						Period: "No_Data",
+						Period: "No Data",
 						Total:  0,
 					},
 				},
-				"net_income_no_data":   int64(-10000),
-				"comparison_expense_" + weekPeriod1 + "_and_no_data": "0%",
-				"comparison_income_no_data_and_no_data":  "0%",
+				"net_income": map[string]interface{}{
+					"period": "no data",
+					"result": int64(-10000),
+				},
+				"comparison_expense": map[string]interface{}{
+					"period_after":  weekPeriod1,
+					"period_before": "no data",
+					"result":        "0%",
+				},
+				"comparison_income": map[string]interface{}{
+					"period_after":  "no data",
+					"period_before": "no data",
+					"result":        "0%",
+				},
 			},
-			ExpectedError:         nil,
+			ExpectedError: nil,
 		},
 	}
 
@@ -585,9 +688,9 @@ func (s *suiteReports) TestGetAnalyticPeriod() {
 		limit := -1
 		var period string
 		if v.ParamPeriod == "month" {
-			period = "%M_%Y"
+			period = "%M %Y"
 		} else if v.ParamPeriod == "week" {
-			period = "%v_%x"
+			period = "%v %x"
 		}
 		var mockCallExpense = s.reportMock.On("GetTransactionPeriod", v.ParamUserId, period, categoryExpense, limit).Return(v.MockReturnBodyExpense, v.MockReturnErrorExpense)
 		var mockCallIncome = s.reportMock.On("GetTransactionPeriod", v.ParamUserId, period, categoryIncome, limit).Return(v.MockReturnBodyIncome, v.MockReturnErrorIncome)

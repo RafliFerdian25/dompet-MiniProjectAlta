@@ -43,7 +43,7 @@ func (s *suiteTransactionAcc) TestGetTransactionAccount() {
 		MockReturnBody     []dto.GetTransactionAccountDTO
 		MockReturnError    error
 		HasReturnBody      bool
-		ExpectedBody       []dto.GetTransactionAccountDTO
+		ExpectedBody       map[string]interface{}
 		ExpectedStatusCode int
 		ExpectedMesaage    string
 	}{
@@ -66,16 +66,20 @@ func (s *suiteTransactionAcc) TestGetTransactionAccount() {
 			},
 			nil,
 			true,
-			[]dto.GetTransactionAccountDTO{
-				{
-					ID:        1,
-					AccountFromID: 1,
-					AccountToID: 2,
-					Amount: 100000,
-					UserID: 1,
-					Note: "test",
-					CreatedAt: time.Now(),
-					AdminFee: 0,
+			map[string]interface{}{
+				"month": map[string]interface{}{
+					"11": []dto.GetTransactionAccountDTO{
+						{
+							ID:        1,
+							AccountFromID: 1,
+							AccountToID: 2,
+							Amount: 100000,
+							UserID: 1,
+							Note: "test",
+							CreatedAt: time.Now(),
+							AdminFee: 0,
+						},
+					},
 				},
 			},
 			http.StatusOK,
@@ -100,16 +104,20 @@ func (s *suiteTransactionAcc) TestGetTransactionAccount() {
 			},
 			nil,
 			true,
-			[]dto.GetTransactionAccountDTO{
-				{
-					ID:        1,
-					AccountFromID: 1,
-					AccountToID: 2,
-					Amount: 100000,
-					UserID: 1,
-					Note: "test",
-					CreatedAt: time.Now(),
-					AdminFee: 0,
+			map[string]interface{}{
+				"month": map[string]interface{}{
+					"11": []dto.GetTransactionAccountDTO{
+						{
+							ID:        1,
+							AccountFromID: 1,
+							AccountToID: 2,
+							Amount: 100000,
+							UserID: 1,
+							Note: "test",
+							CreatedAt: time.Now(),
+							AdminFee: 0,
+						},
+					},
 				},
 			},
 			http.StatusOK,
@@ -123,7 +131,9 @@ func (s *suiteTransactionAcc) TestGetTransactionAccount() {
 			[]dto.GetTransactionAccountDTO{},
 			errors.New(constantError.ErrorNotAuthorized),
 			false,
-			[]dto.GetTransactionAccountDTO{},
+			map[string]interface{}{
+				"month": map[string]interface{}{},
+			},
 			http.StatusBadRequest,
 			"fail get month",
 		},
@@ -135,7 +145,9 @@ func (s *suiteTransactionAcc) TestGetTransactionAccount() {
 			[]dto.GetTransactionAccountDTO{},
 			errors.New(constantError.ErrorNotAuthorized),
 			false,
-			[]dto.GetTransactionAccountDTO{},
+			map[string]interface{}{
+				"month": map[string]interface{}{},
+			},
 			http.StatusUnauthorized,
 			"fail get transaction account",
 		},
@@ -147,7 +159,9 @@ func (s *suiteTransactionAcc) TestGetTransactionAccount() {
 			[]dto.GetTransactionAccountDTO{},
 			errors.New("error"),
 			false,
-			[]dto.GetTransactionAccountDTO{},
+			map[string]interface{}{
+				"month": map[string]interface{}{},
+			},
 			http.StatusInternalServerError,
 			"fail get transaction account",
 		},
@@ -183,9 +197,9 @@ func (s *suiteTransactionAcc) TestGetTransactionAccount() {
 
 			s.Equal(v.ExpectedMesaage, resp["message"])
 			if v.HasReturnBody {
-				s.Equal(v.ExpectedBody[0].Amount, resp["transaction_account_month_" + strconv.Itoa(month)].([]interface{})[0].(map[string]interface{})["amount"])
-				s.Equal(v.ExpectedBody[0].AccountFromID, uint(resp["transaction_account_month_" + strconv.Itoa(month)].([]interface{})[0].(map[string]interface{})["account_from_id"].(float64)))
-				s.Equal(v.ExpectedBody[0].AccountToID, uint(resp["transaction_account_month_" + strconv.Itoa(month)].([]interface{})[0].(map[string]interface{})["account_to_id"].(float64)))
+				s.Equal(v.ExpectedBody["month"].(map[string]interface{})["11"].([]dto.GetTransactionAccountDTO)[0].Amount, resp["transaction_account"].(map[string]interface{})["month"].(map[string]interface{})["11"].([]interface{})[0].(map[string]interface{})["amount"])
+				s.Equal(v.ExpectedBody["month"].(map[string]interface{})["11"].([]dto.GetTransactionAccountDTO)[0].AccountFromID, uint(resp["transaction_account"].(map[string]interface{})["month"].(map[string]interface{})["11"].([]interface{})[0].(map[string]interface{})["account_from_id"].(float64)))
+				s.Equal(v.ExpectedBody["month"].(map[string]interface{})["11"].([]dto.GetTransactionAccountDTO)[0].AccountToID, uint(resp["transaction_account"].(map[string]interface{})["month"].(map[string]interface{})["11"].([]interface{})[0].(map[string]interface{})["account_to_id"].(float64)))
 			}
 		})
 		// remove mock
